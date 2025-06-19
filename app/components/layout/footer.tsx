@@ -11,7 +11,7 @@ export function Footer() {
         <Image
           src="/assets/images/logo-black.webp"
           alt="Logo black"
-          className="h-12 w-[240.5px] md:h-20 md:w-fit"
+          className="h-12 w-[240.5px] md:h-20 md:w-fit object-contain"
           priority={true}
         />
         <GoogleMapsLink address={ADDRESS} displayAddress={ADDRESS} />

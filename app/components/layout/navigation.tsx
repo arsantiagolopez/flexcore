@@ -237,19 +237,19 @@ function MobileNavigation() {
           <div className="space-y-4">
             {routes.map((item, index) => {
               const openingDelays = [
+                "delay-[100ms]",
+                "delay-[150ms]",
                 "delay-[200ms]",
+                "delay-[250ms]",
                 "delay-[300ms]",
-                "delay-[380ms]",
-                "delay-[440ms]",
-                "delay-[480ms]",
-                "delay-[500ms]",
+                "delay-[350ms]",
               ];
               const closingDelays = [
-                "delay-[480ms]",
-                "delay-[440ms]",
-                "delay-[380ms]",
                 "delay-[300ms]",
+                "delay-[250ms]",
                 "delay-[200ms]",
+                "delay-[150ms]",
+                "delay-[100ms]",
                 "delay-0",
               ];
 
