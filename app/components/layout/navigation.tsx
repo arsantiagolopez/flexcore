@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink, useLocation } from "react-router";
+import { Link, NavLink, useLocation } from "react-router";
 import { useIsHydrated } from "~/hooks/use-is-hydrated";
 import { useScrollThreshold } from "~/hooks/use-scroll-threshold";
 import { cn } from "~/lib/utils";
@@ -188,11 +188,13 @@ function MobileNavigation() {
       <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4 bg-transparent">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Image
-            alt="Logo"
-            src="/assets/images/logo-shadow.webp"
-            className="w-14"
-          />
+          <Link to="/">
+            <Image
+              alt="Logo"
+              src="/assets/images/logo-shadow.webp"
+              className="w-14"
+            />
+          </Link>
 
           {/* Burger Menu Button */}
           <button
