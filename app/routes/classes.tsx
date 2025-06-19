@@ -1,4 +1,4 @@
-import { VercelImage } from "~/components/vercel-image";
+import { Image } from "~/components/image";
 
 const classes = [
   {
@@ -78,7 +78,7 @@ function ClassLayout({
   return (
     <div className="flex flex-col md:flex-row items-center gap-10 md:gap-24 md:p-8 rounded-[76px] md:hover:outline-4 md:outline-overlay-foreground transition-all ease-in-out duration-500">
       <div className="relative flex items-center justify-center overflow-hidden min-w-full md:min-w-80 aspect-square rounded-[76px]">
-        <VercelImage alt={label} src={image} priority={true} />
+        <Image alt={label} src={image} priority={true} />
         <div className="absolute flex items-center justify-center max-w-20 text-center select-none">
           <h2 className="text-3xl md:text-4xl text-overlay-foreground italic font-semibold">
             {label}

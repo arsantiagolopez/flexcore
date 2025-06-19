@@ -1,6 +1,6 @@
 import { Instagram, Mail } from "lucide-react";
 import { ContactForm } from "~/components/contact-form";
-import { VercelImage } from "~/components/vercel-image";
+import { Image } from "~/components/image";
 import {
   EMAIL_ADDRESS,
   EMAIL_SUBJECT,
@@ -12,7 +12,7 @@ export default function ContactRoute() {
     <div className="flex flex-col">
       <section className="flex flex-col md:grid md:grid-cols-12 md:h-dvh">
         <div className="md:col-span-7 relative flex items-center justify-center overflow-hidden">
-          <VercelImage
+          <Image
             src="/assets/images/hero.webp"
             alt="Connect with us image"
             className="size-full object-cover h-[92dvh] md:h-fit"

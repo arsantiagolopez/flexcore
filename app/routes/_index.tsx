@@ -1,17 +1,17 @@
-import { VercelImage } from "~/components/vercel-image";
+import { Image } from "~/components/image";
 import type { Route } from "./+types/_index";
 
 export default function HomeRoute() {
   return (
     <div className="flex flex-col">
       <section className="relative flex items-center justify-center h-[92dvh]">
-        <VercelImage
+        <Image
           src="/assets/images/hero.webp"
           alt="Hero image"
           className="size-full object-[50%_48%]"
           priority={true}
         />
-        <VercelImage
+        <Image
           src="/assets/images/logo-white.webp"
           alt="Hero logo"
           className="absolute h-auto w-2/3 md:w-[600px] -mt-10"
@@ -24,14 +24,14 @@ export default function HomeRoute() {
             <p className="text-4xl lg:text-6xl text-overlay-foreground select-none">
               Welcome to
             </p>
-            <VercelImage
+            <Image
               src="/assets/images/logo-white.webp"
               alt="Logo white"
               className="w-2/3 lg:w-1/2"
               priority={true}
             />
           </div>
-          <VercelImage
+          <Image
             src="/assets/images/1.webp"
             alt="Welcome image"
             priority={true}

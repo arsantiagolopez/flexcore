@@ -1,5 +1,5 @@
 import { MapPin } from "lucide-react";
-import { VercelImage } from "../vercel-image";
+import { Image } from "../image";
 import { Link } from "react-router";
 import { ADDRESS } from "~/lib/utils/constants";
 
@@ -8,7 +8,7 @@ export function Footer() {
   return (
     <footer className="relative flex flex-col gap-16 justify-between md:h-80 w-full bg-background p-10 text-center">
       <div className="flex flex-col gap-16 md:flex-row items-center justify-between">
-        <VercelImage
+        <Image
           src="/assets/images/logo-black.webp"
           alt="Logo black"
           className="h-12 md:h-20 w-fit"

@@ -3,7 +3,7 @@ import { NavLink, useLocation } from "react-router";
 import { useIsHydrated } from "~/hooks/use-is-hydrated";
 import { useScrollThreshold } from "~/hooks/use-scroll-threshold";
 import { cn } from "~/lib/utils";
-import { VercelImage } from "../vercel-image";
+import { Image } from "../image";
 import { ADDRESS, EMAIL_ADDRESS } from "~/lib/utils/constants";
 
 const routes = [
@@ -188,11 +188,7 @@ function MobileNavigation() {
       <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4 bg-transparent">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <VercelImage
-            alt="Logo"
-            src="/assets/images/logo.webp"
-            className="w-14"
-          />
+          <Image alt="Logo" src="/assets/images/logo.webp" className="w-14" />
 
           {/* Burger Menu Button */}
           <button
