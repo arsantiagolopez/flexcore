@@ -1,0 +1,35 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+:root {
+  --background: #f2eeeb;
+  --foreground: #000000;
+  --overlay-foreground: #ffffff;
+
+  --nav-height: 80px;
+}
+
+@theme inline {
+  --font-playfair: "Playfair Display", serif;
+  --font-brittany: "Brittany", cursive;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-overlay-foreground: var(--overlay-foreground);
+
+  --spacing-nav-height: var(--nav-height);
+}
+
+@layer base {
+  html,
+  body {
+    @apply bg-background text-foreground font-playfair;
+  }
+}
+
+@layer base {
+  button:not([disabled]),
+  [role="button"]:not([disabled]) {
+    cursor: pointer;
+  }
+}
