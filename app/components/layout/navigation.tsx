@@ -188,7 +188,11 @@ function MobileNavigation() {
       <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4 bg-transparent">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Image alt="Logo" src="/assets/images/logo.webp" className="w-14" />
+          <Image
+            alt="Logo"
+            src="/assets/images/logo-shadow.webp"
+            className="w-14"
+          />
 
           {/* Burger Menu Button */}
           <button
@@ -254,7 +258,7 @@ function MobileNavigation() {
                   key={item.label}
                   href={item.to}
                   className={cn(
-                    "block uppercase text-overlay-foreground drop-shadow-md text-2xl font-light tracking-wide hover:opacity-70 transition-opacity duration-200",
+                    "block uppercase text-overlay-foreground drop-shadow-md text-2xl font-light tracking-wide hover:opacity-70 transition-opacity duration-200 transform-gpu",
                     !isMenuOpen && "opacity-0",
                     isMenuOpen
                       ? `animate-in fade-in-0 slide-in-from-top-4 duration-700 ${openingDelays[index]}`
