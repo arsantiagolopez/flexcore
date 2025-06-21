@@ -1,3 +1,5 @@
+import type { Route } from "./+types/schedule";
+
 const days = [
   { id: "monday", name: "MON" },
   { id: "tuesday", name: "TUE" },
@@ -23,4 +25,17 @@ export default function ScheduleRoute() {
       </section>
     </div>
   );
+}
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Schedule | Flexcore Pilates Studio" },
+    { name: "Schedule", content: "Welcome Flexcore Pilates Studio!" },
+    {
+      tagName: "link",
+      rel: "preload",
+      href: "/assets/images/hero.webp",
+      as: "image",
+    },
+  ];
 }

@@ -11,6 +11,7 @@ import { Layout as DefaultLayout } from "./components/layout";
 import type { Route } from "./+types/root";
 import "./styles/index.css";
 import "./styles/fonts.css";
+import "./styles/animations.css";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -35,7 +36,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        <div className="root">{children}</div>
         <ScrollRestoration />
         <Scripts />
       </body>

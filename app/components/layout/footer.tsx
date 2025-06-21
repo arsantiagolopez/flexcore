@@ -9,7 +9,7 @@ export function Footer() {
     <footer className="relative flex flex-col gap-16 justify-between md:h-80 w-full bg-background p-10 text-center">
       <div className="flex flex-col gap-16 md:flex-row items-center justify-between">
         <Image
-          src="/assets/images/logo-black.webp"
+          src="/assets/images/logo-long-black.webp"
           alt="Logo black"
           className="h-12 w-[240.5px] md:h-20 md:w-fit object-contain"
           priority={true}

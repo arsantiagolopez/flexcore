@@ -9,6 +9,7 @@
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
+    "@base-ui-components/react": "1.0.0-beta.0",
     "@integreat-app/react-sticky-headroom": "^3.0.0",
     "@react-router/node": "^7.5.3",
     "@react-router/serve": "^7.5.3",

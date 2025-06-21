@@ -12,20 +12,20 @@ export default function HomeRoute() {
           priority={true}
         />
         <Image
-          src="/assets/images/logo-white.webp"
+          src="/assets/images/logo-long-white.webp"
           alt="Hero logo"
           className="absolute h-auto w-2/3 md:w-[600px] -mt-10"
           priority={true}
         />
       </section>
-      <section className="flex flex-col-reverse md:flex-row items-center gap-20 md:gap-20 lg:gap-28 xl:gap-40 md:h-dvh p-8 md:px-14 py-20 md:py-20">
-        <div className="relative flex items-center justify-center h-full w-full min-w-[35dvw] rounded-t-full overflow-hidden">
-          <div className="absolute flex flex-col items-center gap-4 lg:gap-6">
+      <section className="flex flex-col-reverse md:flex-row items-center gap-20 md:gap-10 md:h-dvh p-8 md:px-14 py-20 md:py-20">
+        <div className="relative flex items-center justify-center h-full w-full min-w-[37dvw] rounded-t-full overflow-hidden">
+          <div className="absolute flex flex-col items-center gap-2">
             <p className="text-4xl lg:text-6xl text-overlay-foreground select-none">
               Welcome to
             </p>
             <Image
-              src="/assets/images/logo-white.webp"
+              src="/assets/images/logo-long-white.webp"
               alt="Logo white"
               className="w-2/3 lg:w-1/2"
               priority={true}
@@ -38,7 +38,7 @@ export default function HomeRoute() {
           />
         </div>
 
-        <div className="flex flex-col text-base md:text-lg text-center gap-10">
+        <div className="flex flex-col text-base md:text-lg text-center gap-10 md:-mb-10">
           <div className="flex flex-col gap-4 md:gap-6">
             <p>
               Experience the power of movement in our infrared-heated studio,
@@ -69,8 +69,8 @@ export default function HomeRoute() {
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Flexcore Pilates Studio | Home" },
-    { name: "home", content: "Welcome Flexcore Pilates Studio!" },
+    { title: "Home | Flexcore Pilates Studio" },
+    { name: "Home", content: "Welcome Flexcore Pilates Studio!" },
     {
       tagName: "link",
       rel: "preload",

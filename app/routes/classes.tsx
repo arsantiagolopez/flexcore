@@ -1,10 +1,11 @@
 import { Image } from "~/components/image";
+import type { Route } from "./+types/classes";
 
 const classes = [
   {
     id: "classic-core",
     label: "Classic Core",
-    image: "/assets/images/hero.webp",
+    image: "/assets/images/2.webp",
     content: (
       <div className="flex flex-col gap-6 text-center">
         <p className="italic text-lg">Low intensity · Foundational movement</p>
@@ -93,4 +94,17 @@ function ClassLayout({
       </div>
     </div>
   );
+}
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Classes | Flexcore Pilates Studio" },
+    { name: "Classes", content: "Welcome Flexcore Pilates Studio!" },
+    {
+      tagName: "link",
+      rel: "preload",
+      href: "/assets/images/hero.webp",
+      as: "image",
+    },
+  ];
 }

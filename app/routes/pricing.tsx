@@ -1,3 +1,5 @@
+import type { Route } from "./+types/pricing";
+
 const plans = [
   { id: "credits", title: "Class Credits" },
   { id: "packs", title: "Class Packs" },
@@ -26,4 +28,17 @@ function PricingPlan({ title }: { title: string }) {
       <div className="size-full aspect-square bg-overlay-foreground rounded-2xl" />
     </div>
   );
+}
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Pricing | Flexcore Pilates Studio" },
+    { name: "Pricing", content: "Welcome Flexcore Pilates Studio!" },
+    {
+      tagName: "link",
+      rel: "preload",
+      href: "/assets/images/hero.webp",
+      as: "image",
+    },
+  ];
 }
