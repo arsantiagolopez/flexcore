@@ -1,4 +1,4 @@
-import { ContactForm } from "~/components/contact-form";
+import { ContactForm } from "~/components/forms/contact-form";
 import { Image } from "~/components/image";
 import { EmailLink, InstagramLink } from "~/components/layout/navigation";
 import {
@@ -20,16 +20,19 @@ export default function ContactRoute() {
             priority={true}
           />
           <div className="absolute flex flex-col items-center justify-center gap-5 text-center select-none">
-            <h2 className="text-4xl text-overlay-foreground italic">
+            <h2 className="text-3xl md:text-4xl text-overlay-foreground tracking-tight italic">
               Connect with us
             </h2>
             <div className="flex items-center gap-6 text-overlay-foreground">
               <EmailLink
                 email={EMAIL_ADDRESS}
                 subject={EMAIL_SUBJECT}
-                className="size-14"
+                className="size-12 md:size-14"
               />
-              <InstagramLink handle={INSTAGRAM_USERNAME} className="size-14" />
+              <InstagramLink
+                handle={INSTAGRAM_USERNAME}
+                className="size-12 md:size-14"
+              />
             </div>
           </div>
         </div>

@@ -18,6 +18,7 @@ export default function HomeRoute() {
           priority={true}
         />
       </section>
+
       <section className="flex flex-col-reverse md:flex-row items-center gap-20 md:gap-10 md:h-dvh p-8 md:px-14 py-20 md:py-20">
         <div className="relative flex items-center justify-center h-full w-full min-w-[37dvw] rounded-t-full overflow-hidden">
           <div className="absolute flex flex-col items-center gap-2">
