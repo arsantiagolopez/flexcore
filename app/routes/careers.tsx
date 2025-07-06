@@ -1,7 +1,92 @@
-import { ApplyForm } from "~/components/forms/apply-form";
 import type { Route } from "./+types/careers";
+import { ApplyForm, ApplyFormSchema } from "~/components/forms";
 import { Image } from "~/components/image";
-import { Link } from "react-router";
+import { data, Link } from "react-router";
+import { checkHoneypot } from "~/lib/utils/honeypot.server";
+import { parseWithZod } from "@conform-to/zod";
+import { sendEmail } from "~/lib/utils/email.server";
+import {
+  CareersApplyConfirmation,
+  CareersApplyNotification,
+} from "~/components/emails";
+import { EMAIL_ADDRESS } from "~/lib/utils/constants";
+
+export async function action({ request }: Route.ActionArgs) {
+  const formData = await request.formData();
+
+  await checkHoneypot(formData);
+
+  const submission = parseWithZod(formData, {
+    schema: ApplyFormSchema,
+  });
+
+  if (submission.status !== "success") {
+    return data(
+      { result: submission.reply() },
+      { status: submission.status === "error" ? 400 : 200 }
+    );
+  }
+
+  const { fullName, emailAddress, phoneNumber, message, resume } =
+    submission.value;
+
+  // Send notification email to admin (with resume attachment)
+  const adminEmailResponse = await sendEmail({
+    to: process.env.ADMIN_EMAIL_ADDRESS!,
+    subject: `New Job Application - ${fullName}`,
+    react: (
+      <CareersApplyNotification
+        fullName={fullName}
+        emailAddress={emailAddress}
+        phoneNumber={phoneNumber}
+        message={message}
+      />
+    ),
+    // @todo – Confirm attaching PDF on emails works!
+    // attachments: [
+    //   {
+    //     filename: `${fullName.replace(/\s+/g, "_")}_Resume.${resume.name
+    //       .split(".")
+    //       .pop()}`,
+    //     content: Buffer.from(await resume.arrayBuffer()),
+    //   },
+    // ],
+  });
+
+  // Send confirmation email to applicant
+  const userEmailResponse = await sendEmail({
+    to: emailAddress,
+    subject: `Application Received - Thank you, ${fullName}!`,
+    react: (
+      <CareersApplyConfirmation fullName={fullName} responseTimeHours={48} />
+    ),
+  });
+
+  if (
+    adminEmailResponse.status === "success" &&
+    userEmailResponse.status === "success"
+  ) {
+    return data({ success: true });
+  } else {
+    if (adminEmailResponse.status !== "success") {
+      console.error("Failed to send application info to admin");
+    }
+    if (userEmailResponse.status !== "success") {
+      console.error("Failed to send confirmation email to user");
+    }
+
+    return data(
+      {
+        result: submission.reply({
+          formErrors: [
+            `Something happened on our end. Please email us directly at ${EMAIL_ADDRESS}.`,
+          ],
+        }),
+      },
+      { status: 500 }
+    );
+  }
+}
 
 export default function CareersRoute() {
   return (
@@ -79,7 +164,7 @@ function MobileContent() {
           <div className="flex flex-col items-center gap-14 md:gap-12 md:p-10 rounded-4xl md:rounded-[76px] md:border-[6px] border-overlay-foreground max-w-[475px]">
             <p className="text-center text-2xl">Apply below!</p>
 
-            <ApplyForm />
+            {/* <ApplyForm /> */}
 
             <div className="flex flex-col items-center gap-14 -mt-4">
               <p className="text-center text-lg">

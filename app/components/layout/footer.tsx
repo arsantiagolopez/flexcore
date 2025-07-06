@@ -36,24 +36,24 @@ export function Footer() {
           {routes.map(({ id, to, label, items }) => {
             if (id === "join") {
               return (
-                <button onClick={handleJoinNowClick} className={cn(baseStyles)}>
+                <button
+                  key={id}
+                  onClick={handleJoinNowClick}
+                  className={cn(baseStyles)}
+                >
                   {label}
                 </button>
               );
             }
 
             if (!to && items) {
-              return (
-                <>
-                  {items.map(({ id, to, label }) => (
-                    <li key={id}>
-                      <NavLink to={to} className={cn(baseStyles)}>
-                        {label}
-                      </NavLink>
-                    </li>
-                  ))}
-                </>
-              );
+              return items.map(({ id, to, label }) => (
+                <li key={id}>
+                  <NavLink to={to} className={cn(baseStyles)}>
+                    {label}
+                  </NavLink>
+                </li>
+              ));
             }
 
             return (

@@ -1,4 +1,6 @@
-import { ContactForm } from "~/components/forms/contact-form";
+import type { Route } from "./+types/contact";
+import { data } from "react-router";
+import { ContactForm, ContactFormSchema } from "~/components/forms";
 import { Image } from "~/components/image";
 import { EmailLink, InstagramLink } from "~/components/layout/navigation";
 import {
@@ -6,7 +8,93 @@ import {
   EMAIL_SUBJECT,
   INSTAGRAM_USERNAME,
 } from "~/lib/utils/constants";
-import type { Route } from "./+types/contact";
+import { checkHoneypot } from "~/lib/utils/honeypot.server";
+import { parseWithZod } from "@conform-to/zod";
+import { sendEmail } from "~/lib/utils/email.server";
+import { ContactConfirmation } from "~/components/emails";
+
+export async function action({ request }: Route.ActionArgs) {
+  const formData = await request.formData();
+
+  // Check honeypot for spam protection
+  await checkHoneypot(formData);
+
+  const submission = parseWithZod(formData, {
+    schema: ContactFormSchema,
+  });
+
+  if (submission.status !== "success") {
+    return data(
+      { result: submission.reply() },
+      { status: submission.status === "error" ? 400 : 200 }
+    );
+  }
+
+  const { firstName, lastName, emailAddress, phoneNumber, message } =
+    submission.value;
+
+  // // Send notification email to admin
+  // const adminEmailResponse = await sendEmail({
+  //   to: process.env.ADMIN_EMAIL_ADDRESS!,
+  //   subject: `New Contact Form Submission - ${firstName} ${lastName}`,
+  //   react: (
+  //     <ContactNotification
+  //       firstName={firstName}
+  //       lastName={lastName}
+  //       emailAddress={emailAddress}
+  //       phoneNumber={phoneNumber}
+  //       message={message}
+  //     />
+  //   ),
+  // });
+
+  // Send confirmation email to user
+  const userEmailResponse = await sendEmail({
+    to: emailAddress,
+    subject: "We've Received Your Message!",
+    react: <ContactConfirmation firstName={firstName} responseTimeHours={48} />,
+  });
+
+  if (
+    // adminEmailResponse.status === "success" &&
+    userEmailResponse.status === "success"
+  ) {
+    return data({ success: true });
+  } else {
+    // Check specifically for invalid email errors
+    if (
+      // userEmailResponse.status !== "success" &&
+      userEmailResponse.error?.message?.includes("Invalid `to` field")
+    ) {
+      return data(
+        {
+          result: submission.reply({
+            fieldErrors: {
+              emailAddress: ["Please enter a valid email address"],
+            },
+          }),
+        },
+        { status: 400 }
+      );
+    }
+
+    console.error("Failed to send emails:", {
+      // adminEmailResponse,
+      userEmailResponse,
+    });
+
+    return data(
+      {
+        result: submission.reply({
+          formErrors: [
+            `Something happened on our end. Please email us directly at ${EMAIL_ADDRESS}.`,
+          ],
+        }),
+      },
+      { status: 500 }
+    );
+  }
+}
 
 export default function ContactRoute() {
   return (
