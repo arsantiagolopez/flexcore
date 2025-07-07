@@ -11,7 +11,7 @@ import {
 import { checkHoneypot } from "~/lib/utils/honeypot.server";
 import { parseWithZod } from "@conform-to/zod";
 import { sendEmail } from "~/lib/utils/email.server";
-import { ContactConfirmation } from "~/components/emails";
+import { ContactConfirmation, ContactNotification } from "emails";
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
@@ -33,37 +33,49 @@ export async function action({ request }: Route.ActionArgs) {
   const { firstName, lastName, emailAddress, phoneNumber, message } =
     submission.value;
 
-  // // Send notification email to admin
-  // const adminEmailResponse = await sendEmail({
-  //   to: process.env.ADMIN_EMAIL_ADDRESS!,
-  //   subject: `New Contact Form Submission - ${firstName} ${lastName}`,
-  //   react: (
-  //     <ContactNotification
-  //       firstName={firstName}
-  //       lastName={lastName}
-  //       emailAddress={emailAddress}
-  //       phoneNumber={phoneNumber}
-  //       message={message}
-  //     />
-  //   ),
-  // });
+  // Custom format: "Monday, January 7, 2025 at 2:30 PM"
+  const formattedSubmissionDate = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+  // Send notification email to admin
+  const adminEmailResponse = await sendEmail({
+    to: process.env.ADMIN_EMAIL_ADDRESS!,
+    subject: `Internal – New Client Contact Form Submission - ${firstName} ${lastName}`,
+    react: (
+      <ContactNotification
+        firstName={firstName}
+        lastName={lastName}
+        emailAddress={emailAddress}
+        phoneNumber={phoneNumber}
+        message={message}
+        submissionDate={formattedSubmissionDate}
+      />
+    ),
+  });
 
   // Send confirmation email to user
   const userEmailResponse = await sendEmail({
     to: emailAddress,
     subject: "We've Received Your Message!",
-    react: <ContactConfirmation firstName={firstName} responseTimeHours={48} />,
+    react: <ContactConfirmation responseTimeHours={48} />,
   });
 
   if (
-    // adminEmailResponse.status === "success" &&
+    adminEmailResponse.status === "success" &&
     userEmailResponse.status === "success"
   ) {
     return data({ success: true });
   } else {
     // Check specifically for invalid email errors
     if (
-      // userEmailResponse.status !== "success" &&
+      userEmailResponse.status !== "success" &&
       userEmailResponse.error?.message?.includes("Invalid `to` field")
     ) {
       return data(
@@ -79,7 +91,7 @@ export async function action({ request }: Route.ActionArgs) {
     }
 
     console.error("Failed to send emails:", {
-      // adminEmailResponse,
+      adminEmailResponse,
       userEmailResponse,
     });
 

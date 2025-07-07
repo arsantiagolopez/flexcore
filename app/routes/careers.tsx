@@ -5,10 +5,7 @@ import { data, Link } from "react-router";
 import { checkHoneypot } from "~/lib/utils/honeypot.server";
 import { parseWithZod } from "@conform-to/zod";
 import { sendEmail } from "~/lib/utils/email.server";
-import {
-  CareersApplyConfirmation,
-  CareersApplyNotification,
-} from "~/components/emails";
+import { CareersApplyConfirmation, CareersApplyNotification } from "emails";
 import { EMAIL_ADDRESS } from "~/lib/utils/constants";
 
 export async function action({ request }: Route.ActionArgs) {
@@ -30,6 +27,17 @@ export async function action({ request }: Route.ActionArgs) {
   const { fullName, emailAddress, phoneNumber, message, resume } =
     submission.value;
 
+  // Custom format: "Monday, January 7, 2025 at 2:30 PM"
+  const formattedSubmissionDate = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+
   // Send notification email to admin (with resume attachment)
   const adminEmailResponse = await sendEmail({
     to: process.env.ADMIN_EMAIL_ADDRESS!,
@@ -40,6 +48,7 @@ export async function action({ request }: Route.ActionArgs) {
         emailAddress={emailAddress}
         phoneNumber={phoneNumber}
         message={message}
+        submissionDate={formattedSubmissionDate}
       />
     ),
     // @todo – Confirm attaching PDF on emails works!
@@ -56,9 +65,9 @@ export async function action({ request }: Route.ActionArgs) {
   // Send confirmation email to applicant
   const userEmailResponse = await sendEmail({
     to: emailAddress,
-    subject: `Application Received - Thank you, ${fullName}!`,
+    subject: "Thank For Applying to Flexcore Pilates!",
     react: (
-      <CareersApplyConfirmation fullName={fullName} responseTimeHours={48} />
+      <CareersApplyConfirmation fullName={fullName} responseTimeHours="2-3" />
     ),
   });
 
@@ -74,6 +83,11 @@ export async function action({ request }: Route.ActionArgs) {
     if (userEmailResponse.status !== "success") {
       console.error("Failed to send confirmation email to user");
     }
+
+    console.error("Failed to send emails:", {
+      adminEmailResponse,
+      userEmailResponse,
+    });
 
     return data(
       {

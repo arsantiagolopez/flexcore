@@ -1,17 +1,20 @@
 import * as E from "@react-email/components";
+import { DOMAIN, INSTAGRAM_USERNAME } from "~/lib/utils/constants";
 
-export function ContactNotification({
+export default function ContactNotification({
   firstName,
   lastName,
   emailAddress,
   phoneNumber,
   message,
+  submissionDate,
 }: {
   firstName: string;
   lastName: string;
   emailAddress: string;
   phoneNumber?: string;
   message: string;
+  submissionDate: string;
 }) {
   return (
     <E.Html lang="en" dir="ltr">
@@ -23,195 +26,164 @@ export function ContactNotification({
           margin: "0 auto",
           padding: "40px 20px",
           backgroundColor: "#f2eeeb",
+          lineHeight: "1.4",
         }}
       >
-        {/* Header with elegant spacing */}
-        <E.Section style={{ textAlign: "center", marginBottom: "48px" }}>
-          <E.Text
-            style={{
-              fontSize: "28px",
-              fontWeight: "300",
-              color: "#2c2c2c",
-              margin: "0",
-              letterSpacing: "0.5px",
-            }}
-          >
-            New Contact Inquiry
-          </E.Text>
-          <E.Hr
-            style={{
-              width: "60px",
-              height: "1px",
-              backgroundColor: "#d4c5b3",
-              border: "none",
-              margin: "24px auto",
-            }}
-          />
-        </E.Section>
-
-        {/* Contact details in clean cards */}
-        <E.Section
+        {/* Greeting */}
+        <E.Text
           style={{
-            backgroundColor: "#ffffff",
-            padding: "32px",
-            borderRadius: "12px",
-            marginBottom: "32px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+            fontSize: "16px",
+            color: "#000000",
+            margin: "0 0 24px 0",
           }}
         >
-          <E.Row>
-            <E.Column>
-              <E.Text
-                style={{
-                  fontSize: "14px",
-                  fontWeight: "500",
-                  color: "#8b7355",
-                  textTransform: "uppercase",
-                  letterSpacing: "1px",
-                  margin: "0 0 8px 0",
-                }}
-              >
-                Contact Information
-              </E.Text>
-            </E.Column>
-          </E.Row>
+          Hi Team,
+        </E.Text>
 
-          <E.Row style={{ marginBottom: "16px" }}>
-            <E.Column style={{ width: "30%" }}>
-              <E.Text
-                style={{
-                  fontSize: "16px",
-                  color: "#8b7355",
-                  margin: "0",
-                }}
-              >
-                Name
-              </E.Text>
-            </E.Column>
-            <E.Column style={{ width: "70%" }}>
-              <E.Text
-                style={{
-                  fontSize: "16px",
-                  color: "#2c2c2c",
-                  margin: "0",
-                  fontWeight: "400",
-                }}
-              >
-                {firstName} {lastName}
-              </E.Text>
-            </E.Column>
-          </E.Row>
+        {/* Main content paragraphs */}
+        <E.Text
+          style={{
+            fontSize: "16px",
+            color: "#000000",
+            margin: "0 0 24px 0",
+          }}
+        >
+          We've received a new contact form submission via our website.
+        </E.Text>
 
-          <E.Row style={{ marginBottom: "16px" }}>
-            <E.Column style={{ width: "30%" }}>
-              <E.Text
-                style={{
-                  fontSize: "16px",
-                  color: "#8b7355",
-                  margin: "0",
-                }}
-              >
-                Email
-              </E.Text>
-            </E.Column>
-            <E.Column style={{ width: "70%" }}>
-              <E.Text
-                style={{
-                  fontSize: "16px",
-                  color: "#2c2c2c",
-                  margin: "0",
-                }}
-              >
-                {emailAddress}
-              </E.Text>
-            </E.Column>
-          </E.Row>
+        <E.Text
+          style={{
+            fontSize: "16px",
+            color: "#000000",
+            margin: "0 0 24px 0",
+            fontWeight: "600",
+            textDecoration: "underline",
+          }}
+        >
+          Please see the details below:
+        </E.Text>
 
-          {phoneNumber && (
-            <E.Row>
-              <E.Column style={{ width: "30%" }}>
-                <E.Text
-                  style={{
-                    fontSize: "16px",
-                    color: "#8b7355",
-                    margin: "0",
-                  }}
-                >
-                  Phone
-                </E.Text>
-              </E.Column>
-              <E.Column style={{ width: "70%" }}>
-                <E.Text
-                  style={{
-                    fontSize: "16px",
-                    color: "#2c2c2c",
-                    margin: "0",
-                  }}
-                >
-                  {phoneNumber}
-                </E.Text>
-              </E.Column>
-            </E.Row>
-          )}
-        </E.Section>
+        {/* Contact details */}
+        <E.Text
+          style={{
+            fontSize: "16px",
+            color: "#000000",
+            margin: "0 0 8px 0",
+          }}
+        >
+          <strong>Name:</strong> {firstName} {lastName}
+        </E.Text>
 
-        {/* Message section */}
-        <E.Section>
-          <E.Text
+        <E.Text
+          style={{
+            fontSize: "16px",
+            color: "#000000",
+            margin: "0 0 8px 0",
+          }}
+        >
+          <strong>Phone number:</strong> {phoneNumber || "–"}
+        </E.Text>
+
+        <E.Text
+          style={{
+            fontSize: "16px",
+            color: "#000000",
+            margin: "0 0 8px 0",
+          }}
+        >
+          <strong>Email address:</strong> {emailAddress}
+        </E.Text>
+
+        <E.Text
+          style={{
+            fontSize: "16px",
+            color: "#000000",
+            margin: "0 0 8px 0",
+          }}
+        >
+          <strong>Submission date:</strong> {submissionDate}
+        </E.Text>
+
+        <E.Text
+          style={{
+            fontSize: "16px",
+            color: "#000000",
+            margin: "0 0 8px 0",
+          }}
+        >
+          <strong>Message:</strong>
+        </E.Text>
+
+        <E.Text
+          style={{
+            fontSize: "16px",
+            color: "#000000",
+            margin: "0 0 32px 0",
+            fontStyle: "italic",
+          }}
+        >
+          "{message}"
+        </E.Text>
+
+        {/* Socials & Logo Footer */}
+        <div
+          style={{
+            width: "100%",
+            overflow: "hidden",
+          }}
+        >
+          {/* Social icons floated left */}
+          <div
             style={{
-              fontSize: "14px",
-              fontWeight: "500",
-              color: "#8b7355",
-              textTransform: "uppercase",
-              letterSpacing: "1px",
-              margin: "0 0 16px 0",
+              float: "left",
+              lineHeight: "89px", // Roughly the height of the logo 120x88.8
             }}
           >
-            Message
-          </E.Text>
-
-          <E.Section
-            style={{
-              backgroundColor: "#ffffff",
-              padding: "24px",
-              borderRadius: "8px",
-              borderLeft: "4px solid #d4c5b3",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-            }}
-          >
-            <E.Text
+            <E.Link
+              href={DOMAIN}
               style={{
-                fontSize: "16px",
-                lineHeight: "1.6",
-                color: "#2c2c2c",
-                margin: "0",
-                fontStyle: "italic",
+                textDecoration: "none",
+                marginLeft: "16px",
+                marginRight: "16px",
+                display: "inline-block",
+                verticalAlign: "middle",
               }}
             >
-              "{message}"
-            </E.Text>
-          </E.Section>
-        </E.Section>
+              <E.Img
+                src={`${DOMAIN}/assets/icons/globe.png`}
+                alt="Visit our website"
+                width="24"
+                height="24"
+              />
+            </E.Link>
 
-        {/* Footer */}
-        <E.Section
-          style={{
-            textAlign: "center",
-            marginTop: "48px",
-            paddingTop: "24px",
-            borderTop: "1px solid #d4c5b3",
-          }}
-        >
-          <E.Text
-            style={{
-              fontSize: "12px",
-              color: "#8b7355",
-              margin: "0",
-            }}
-          >
-            Sent from Flexcore Pilates Studio
-          </E.Text>
-        </E.Section>
+            <E.Link
+              href={`https://instagram.com/${INSTAGRAM_USERNAME}`}
+              style={{
+                textDecoration: "none",
+                display: "inline-block",
+                verticalAlign: "middle",
+              }}
+            >
+              <E.Img
+                src={`${DOMAIN}/assets/icons/instagram.png`}
+                alt="Follow us on Instagram"
+                width="24"
+                height="24"
+              />
+            </E.Link>
+          </div>
+
+          {/* Logo floated right */}
+          <div style={{ float: "right" }}>
+            <E.Img
+              src={`${DOMAIN}/assets/images/email-signature.png`}
+              alt="Flexcore Logo"
+              width="120"
+              height="auto"
+            />
+          </div>
+        </div>
       </E.Container>
     </E.Html>
   );

@@ -8,19 +8,6 @@ export default function ContactConfirmation({
 }) {
   return (
     <E.Html lang="en" dir="ltr">
-      <E.Head>
-        <style>
-          {`
-            @font-face {
-              font-family: "Brittany";
-              src: url("${DOMAIN}/assets/fonts/brittany.ttf") format("truetype");
-              font-weight: normal;
-              font-style: normal;
-              font-display: swap;
-            }
-          `}
-        </style>
-      </E.Head>
       <E.Container
         style={{
           fontFamily:
@@ -93,44 +80,49 @@ export default function ContactConfirmation({
           style={{
             fontSize: "16px",
             color: "#000000",
-            margin: "0 0 8px 0",
+            margin: "0 0 0px 0",
           }}
         >
           Warmly,
         </E.Text>
 
         {/* Signature using your custom Brittany font */}
-        <E.Text
+        <E.Img
+          src={`${DOMAIN}/assets/images/team-signature.png`}
+          alt="The Flexcore Pilates Team"
+          width="auto"
+          height="50"
           style={{
-            fontFamily: '"Brittany", cursive, Georgia, serif',
-            fontSize: "18px",
-            color: "#000000",
-            margin: "0 0 40px 0",
+            margin: "0 0 32px 0",
           }}
-        >
-          The Flexcore Pilates Team
-        </E.Text>
+        />
 
         {/* Socials & Signature */}
         <div
           style={{
-            marginTop: "60px",
             width: "100%",
             overflow: "hidden",
           }}
         >
           {/* Social icons floated left */}
-          <div style={{ float: "left" }}>
+          <div
+            style={{
+              float: "left",
+              lineHeight: "89px", // Roughly the height of the logo 120x88.8
+            }}
+          >
             <E.Link
               href={DOMAIN}
               style={{
                 textDecoration: "none",
+                marginLeft: "16px",
                 marginRight: "16px",
                 display: "inline-block",
+                verticalAlign: "middle",
               }}
             >
               <E.Img
-                src={`${DOMAIN}/assets/icons/globe.webp`}
+                src={`${DOMAIN}/assets/icons/globe.png`}
                 alt="Visit our website"
                 width="24"
                 height="24"
@@ -142,10 +134,11 @@ export default function ContactConfirmation({
               style={{
                 textDecoration: "none",
                 display: "inline-block",
+                verticalAlign: "middle",
               }}
             >
               <E.Img
-                src={`${DOMAIN}/assets/icons/instagram.webp`}
+                src={`${DOMAIN}/assets/icons/instagram.png`}
                 alt="Follow us on Instagram"
                 width="24"
                 height="24"
@@ -156,7 +149,7 @@ export default function ContactConfirmation({
           {/* Logo floated right */}
           <div style={{ float: "right" }}>
             <E.Img
-              src={`${DOMAIN}/assets/images/email-signature.webp`}
+              src={`${DOMAIN}/assets/images/email-signature.png`}
               alt="Flexcore Logo"
               width="120"
               height="auto"
