@@ -1,132 +1,197 @@
+import React from "react";
+import {
+  getFormProps,
+  getInputProps,
+  useForm,
+  type SubmissionResult,
+} from "@conform-to/react";
+import { getZodConstraint, parseWithZod } from "@conform-to/zod";
+import { z } from "zod";
 import { Paperclip } from "lucide-react";
-import React, { useState } from "react";
+import { ErrorList, Field, TextareaField } from "./forms";
+import { Form, useActionData, useNavigation } from "react-router";
+import { cn } from "~/lib/utils";
+import { Toast } from "@base-ui-components/react";
 
-type FormData = {
-  fullName: string;
-  phoneNumber: string;
-  emailAddress: string;
-  message: string;
-};
+export const ApplyFormSchema = z.object({
+  fullName: z
+    .string({ required_error: "Full name is required" })
+    .min(1, "Full name is required"),
+  phoneNumber: z
+    .string()
+    .optional()
+    .transform((val) => val || undefined),
+  emailAddress: z
+    .string({ required_error: "Email address is required" })
+    .email("Please enter a valid email address"),
+  message: z
+    .string()
+    .optional()
+    .transform((val) => val || undefined),
+  resume: z
+    .instanceof(File, { message: "Resume is required" })
+    .refine((file) => file.size > 0, "Resume is required")
+    .refine(
+      (file) =>
+        file.type === "application/pdf" || file.type.startsWith("application/"),
+      "Resume must be a PDF or document file"
+    ),
+});
 
 export function ApplyForm() {
-  const [formData, setFormData] = useState<FormData>({
-    fullName: "",
-    phoneNumber: "",
-    emailAddress: "",
-    message: "",
+  const actionData = useActionData<{
+    result?: SubmissionResult;
+    success?: boolean;
+  }>();
+  const [selectedFile, setSelectedFile] = React.useState<string>("");
+  const toastManager = Toast.useToastManager();
+  const navigation = useNavigation();
+
+  const isSubmitting = navigation.state === "submitting";
+
+  const [form, fields] = useForm({
+    id: "apply-form",
+    constraint: getZodConstraint(ApplyFormSchema),
+    lastResult: actionData?.result,
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema: ApplyFormSchema });
+    },
+    shouldRevalidate: "onBlur",
+    // @todo – This prop doesn't work, how to send attachment with @conform/react ?
+    // encType: "multipart/form-data", // Required for file uploads
   });
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle form submission here
-    console.log("Form submitted:", formData);
-  };
+  React.useEffect(() => {
+    if (actionData?.success) {
+      toastManager.add({
+        title: "Application submitted!",
+        description: "Thank you for applying. We'll get back to you soon.",
+        type: "success",
+      });
+    }
+  }, [actionData]);
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex flex-col items-center gap-10 md:gap-4 w-full"
-    >
-      <div className="flex flex-col gap-4 w-full">
-        <fieldset className="flex items-center gap-4">
-          <label
-            htmlFor="firstName"
-            className="block text-base md:text-lg mb-2 min-w-fit"
-          >
-            full name:
-          </label>
-          <input
-            type="text"
-            id="fullName"
-            name="fullName"
-            value={formData.fullName}
-            onChange={handleChange}
-            className="w-full px-4 py-1.5 rounded-full border-0 bg-overlay-foreground focus:outline-none focus:ring-2"
-            required
-          />
-        </fieldset>
-
-        <fieldset className="flex items-center gap-4">
-          <label
-            htmlFor="phoneNumber"
-            className="block text-base md:text-lg mb-2 min-w-fit"
-          >
-            phone number:
-          </label>
-          <input
-            type="tel"
-            id="phoneNumber"
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleChange}
-            className="w-full px-4 py-1.5 rounded-full border-0 bg-overlay-foreground focus:outline-none focus:ring-2"
-            required
-          />
-        </fieldset>
-
-        <fieldset className="flex items-center gap-4">
-          <label
-            htmlFor="emailAddress"
-            className="block text-base md:text-lg mb-2 min-w-fit"
-          >
-            email address:
-          </label>
-          <input
-            type="email"
-            id="emailAddress"
-            name="emailAddress"
-            value={formData.emailAddress}
-            onChange={handleChange}
-            className="w-full px-4 py-1.5 rounded-full border-0 bg-overlay-foreground focus:outline-none focus:ring-2"
-            required
-          />
-        </fieldset>
-
-        <fieldset className="flex items-center gap-4">
-          <label
-            htmlFor="message"
-            className="block text-base md:text-lg mb-2 min-w-fit"
-          >
-            message:
-          </label>
-          <textarea
-            id="message"
-            name="message"
-            value={formData.message}
-            onChange={handleChange}
-            rows={3}
-            className="px-4 py-1.5 rounded-2xl border-0 bg-overlay-foreground focus:outline-none focus:ring-2 resize-none w-full"
-            required
-          />
-        </fieldset>
-      </div>
-
-      <fieldset className="flex items-center mr-auto gap-2">
-        <Paperclip />
-        <label
-          htmlFor="message"
-          className="block text-base md:text-lg min-w-fit"
-        >
-          Attach resume
-        </label>
-      </fieldset>
-
-      <button
-        type="submit"
-        className="flex items-center gap-2 rounded-full bg-overlay-foreground px-5 py-2 w-fit hover:bg-overlay-foreground/70 active:shadow-xs"
+    <div className="w-full">
+      <Form
+        {...getFormProps(form)}
+        method="POST"
+        encType="multipart/form-data"
+        className="flex flex-col items-center gap-10 md:gap-4 w-full"
       >
-        submit
-      </button>
-    </form>
+        {/* Honeypot inputs for spam protection - these would be rendered as hidden inputs */}
+        <div style={{ display: "none" }}>
+          <input type="text" name="honeypot" tabIndex={-1} autoComplete="off" />
+        </div>
+
+        <div className="flex flex-col gap-4 w-full">
+          <Field
+            labelProps={{
+              children: "full name:",
+              className: "block text-base md:text-lg min-w-fit",
+            }}
+            inputProps={{
+              ...getInputProps(fields.fullName, { type: "text" }),
+              className:
+                "w-full px-4 py-1.5 rounded-full border-0 bg-overlay-foreground focus:outline-none focus:ring-2",
+              autoComplete: "name",
+            }}
+            errors={fields.fullName.errors}
+          />
+
+          <Field
+            labelProps={{
+              children: "phone number:",
+              className: "block text-base md:text-lg min-w-fit",
+            }}
+            inputProps={{
+              ...getInputProps(fields.phoneNumber, { type: "tel" }),
+              className:
+                "w-full px-4 py-1.5 rounded-full border-0 bg-overlay-foreground focus:outline-none focus:ring-2",
+              autoComplete: "tel",
+            }}
+            errors={fields.phoneNumber.errors}
+          />
+
+          <Field
+            labelProps={{
+              children: "email address:",
+              className: "block text-base md:text-lg min-w-fit",
+            }}
+            inputProps={{
+              ...getInputProps(fields.emailAddress, { type: "email" }),
+              className:
+                "w-full px-4 py-1.5 rounded-full border-0 bg-overlay-foreground focus:outline-none focus:ring-2",
+              autoComplete: "email",
+            }}
+            errors={fields.emailAddress.errors}
+          />
+
+          <TextareaField
+            labelProps={{
+              children: "message:",
+              className: "block text-base md:text-lg min-w-fit",
+            }}
+            textareaProps={{
+              ...getInputProps(fields.message, { type: "text" }),
+              rows: 3,
+              className:
+                "px-4 py-1.5 rounded-2xl border-0 bg-overlay-foreground focus:outline-none focus:ring-2 resize-none w-full",
+            }}
+            errors={fields.message.errors}
+          />
+        </div>
+
+        <fieldset className="flex items-center gap-3 mr-auto">
+          <label
+            htmlFor={fields.resume.id}
+            className={cn(
+              "flex items-center gap-2 text-base md:text-lg min-w-fit cursor-pointer hover:underline",
+              fields.resume.errors && "text-destructive"
+            )}
+          >
+            <Paperclip />
+            Attach resume
+          </label>
+          <input
+            {...getInputProps(fields.resume, { type: "file" })}
+            accept=".pdf,.doc,.docx"
+            className="hidden"
+            onChange={(e) => {
+              // Update your local state
+              const file = e.target.files?.[0];
+              setSelectedFile(file ? file.name : "");
+
+              // Trigger Conform validation manually
+              form.validate({ name: fields.resume.name });
+            }}
+          />
+
+          {selectedFile && (
+            <span className="text-sm text-foreground/50 truncate">
+              {selectedFile}
+            </span>
+          )}
+
+          {fields.resume.errors && (
+            <span className="mt-px">
+              <ErrorList
+                id={`${fields.resume.id}-error`}
+                errors={fields.resume.errors}
+              />
+            </span>
+          )}
+        </fieldset>
+
+        <ErrorList id={form.errorId} errors={form.errors} />
+
+        <button
+          type="submit"
+          className="flex items-center gap-2 rounded-full bg-overlay-foreground px-5 py-2 w-fit hover:bg-gray-200 active:shadow-xs"
+        >
+          {isSubmitting ? "submitting..." : "submit"}
+        </button>
+      </Form>
+    </div>
   );
 }

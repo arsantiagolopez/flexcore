@@ -10,6 +10,7 @@
   --foreground: #000000;
   --overlay-foreground: #ffffff;
   --border: #c5c5c5;
+  --destructive: #d70040;
 
   --nav-height: 80px;
 }
@@ -22,6 +23,7 @@
   --color-foreground: var(--foreground);
   --color-overlay-foreground: var(--overlay-foreground);
   --color-border: var(--border);
+  --color-destructive: var(--destructive);
 
   --spacing-nav-height: var(--nav-height);
 }

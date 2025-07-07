@@ -12,6 +12,8 @@ import type { Route } from "./+types/root";
 import "./styles/index.css";
 import "./styles/fonts.css";
 import "./styles/animations.css";
+import { Toast } from "@base-ui-components/react";
+import { ToastList } from "./components/toast";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -46,9 +48,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <DefaultLayout>
-      <Outlet />
-    </DefaultLayout>
+    <Toast.Provider>
+      <DefaultLayout>
+        <Outlet />
+
+        <Toast.Portal>
+          <Toast.Viewport className="fixed top-auto mx-auto flex md:right-8 md:bottom-8 md:w-80">
+            <ToastList />
+          </Toast.Viewport>
+        </Toast.Portal>
+      </DefaultLayout>
+    </Toast.Provider>
   );
 }
 
