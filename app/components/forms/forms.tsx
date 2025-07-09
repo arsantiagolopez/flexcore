@@ -5,8 +5,7 @@ type FieldProps = {
   labelProps: React.LabelHTMLAttributes<HTMLLabelElement> & {
     children: React.ReactNode;
   };
-  inputProps: React.InputHTMLAttributes<HTMLInputElement> &
-    React.TextareaHTMLAttributes<HTMLTextAreaElement>;
+  inputProps: React.InputHTMLAttributes<HTMLInputElement>;
   errors?: string[];
   className?: string;
 };
@@ -35,7 +34,7 @@ export function Field({
             id={id}
             aria-invalid={errors?.length ? true : undefined}
             aria-describedby={errorId}
-            {...(inputProps as React.InputHTMLAttributes<HTMLInputElement>)}
+            {...inputProps}
             className={cn(
               "h-9",
               inputProps.className,

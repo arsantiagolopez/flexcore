@@ -3,100 +3,148 @@ import { ApplyForm, ApplyFormSchema } from "~/components/forms";
 import { Image } from "~/components/image";
 import { data, Link } from "react-router";
 import { checkHoneypot } from "~/lib/utils/honeypot.server";
-import { parseWithZod } from "@conform-to/zod";
 import { sendEmail } from "~/lib/utils/email.server";
 import { CareersApplyConfirmation, CareersApplyNotification } from "emails";
 import { EMAIL_ADDRESS } from "~/lib/utils/constants";
 import { Separator } from "@base-ui-components/react";
+import { parseWithZod } from "@conform-to/zod";
+import { parseFormData } from "@mjackson/form-data-parser";
+
+const MAX_SIZE = 1024 * 1024 * 10; // 10MB
+
+// Helper function to get file extension
+function getFileExtension(filename: string): string {
+  return filename.split(".").pop() || "";
+}
+
+// Helper function to get MIME type from file extension
+function getMimeType(extension: string): string {
+  const mimeTypes: Record<string, string> = {
+    pdf: "application/pdf",
+    doc: "application/msword",
+    docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  };
+  return mimeTypes[extension.toLowerCase()] || "application/octet-stream";
+}
 
 export async function action({ request }: Route.ActionArgs) {
-  const formData = await request.formData();
-
-  await checkHoneypot(formData);
-
-  const submission = parseWithZod(formData, {
-    schema: ApplyFormSchema,
-  });
-
-  if (submission.status !== "success") {
-    return data(
-      { result: submission.reply() },
-      { status: submission.status === "error" ? 400 : 200 }
-    );
-  }
-
-  const { fullName, emailAddress, phoneNumber, message, resume } =
-    submission.value;
-
-  // Custom format: "Monday, January 7, 2025 at 2:30 PM"
-  const formattedSubmissionDate = new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  });
-
-  // Send notification email to admin (with resume attachment)
-  const adminEmailResponse = await sendEmail({
-    to: process.env.ADMIN_EMAIL_ADDRESS!,
-    subject: `New Job Application - ${fullName}`,
-    react: (
-      <CareersApplyNotification
-        fullName={fullName}
-        emailAddress={emailAddress}
-        phoneNumber={phoneNumber}
-        message={message}
-        submissionDate={formattedSubmissionDate}
-      />
-    ),
-    // @todo – Confirm attaching PDF on emails works!
-    // attachments: [
-    //   {
-    //     filename: `${fullName.replace(/\s+/g, "_")}_Resume.${resume.name
-    //       .split(".")
-    //       .pop()}`,
-    //     content: Buffer.from(await resume.arrayBuffer()),
-    //   },
-    // ],
-  });
-
-  // Send confirmation email to applicant
-  const userEmailResponse = await sendEmail({
-    to: emailAddress,
-    subject: "Thank For Applying to Flexcore Pilates!",
-    react: (
-      <CareersApplyConfirmation fullName={fullName} responseTimeHours="2-3" />
-    ),
-  });
-
-  if (
-    adminEmailResponse.status === "success" &&
-    userEmailResponse.status === "success"
-  ) {
-    return data({ success: true });
-  } else {
-    if (adminEmailResponse.status !== "success") {
-      console.error("Failed to send application info to admin");
-    }
-    if (userEmailResponse.status !== "success") {
-      console.error("Failed to send confirmation email to user");
-    }
-
-    console.error("Failed to send emails:", {
-      adminEmailResponse,
-      userEmailResponse,
+  try {
+    const formData = await parseFormData(request, {
+      maxFileSize: MAX_SIZE,
     });
+
+    await checkHoneypot(formData);
+
+    const submission = parseWithZod(formData, {
+      schema: ApplyFormSchema,
+    });
+
+    if (submission.status !== "success") {
+      console.log("❌ Form validation failed");
+      console.log("🔍 Submission error:", submission.error);
+
+      return data(
+        { result: submission.reply() },
+        { status: submission.status === "error" ? 400 : 200 }
+      );
+    }
+
+    const { fullName, emailAddress, phoneNumber, message, resume } =
+      submission.value;
+
+    // Custom format: "Monday, January 7, 2025 at 2:30 PM"
+    const formattedSubmissionDate = new Date().toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+
+    // Prepare resume attachment
+    const resumeBuffer = Buffer.from(await resume.arrayBuffer());
+    const fileExtension = getFileExtension(resume.name);
+    const attachmentFilename = `${fullName.replace(
+      /\s+/g,
+      "_"
+    )}_Resume.${fileExtension}`;
+
+    // Send notification email to admin (with resume attachment)
+    const adminEmailResponse = await sendEmail({
+      to: process.env.ADMIN_EMAIL_ADDRESS!,
+      subject: `New Job Application - ${fullName}`,
+      react: (
+        <CareersApplyNotification
+          fullName={fullName}
+          emailAddress={emailAddress}
+          phoneNumber={phoneNumber}
+          message={message}
+          submissionDate={formattedSubmissionDate}
+        />
+      ),
+      attachments: [
+        {
+          filename: attachmentFilename,
+          content: resumeBuffer,
+          contentType: getMimeType(fileExtension),
+        },
+      ],
+    });
+
+    // Send confirmation email to applicant
+    const userEmailResponse = await sendEmail({
+      to: emailAddress,
+      subject: "Thank For Applying to Flexcore Pilates!",
+      react: (
+        <CareersApplyConfirmation fullName={fullName} responseTimeHours="2-3" />
+      ),
+    });
+
+    if (
+      adminEmailResponse.status === "success" &&
+      userEmailResponse.status === "success"
+    ) {
+      return data({ success: true });
+    } else {
+      console.log("❌ Email sending failed");
+
+      if (adminEmailResponse.status !== "success") {
+        console.error(
+          "Failed to send application info to admin:",
+          adminEmailResponse
+        );
+      }
+      if (userEmailResponse.status !== "success") {
+        console.error(
+          "Failed to send confirmation email to user:",
+          userEmailResponse
+        );
+      }
+
+      return data(
+        {
+          result: submission.reply({
+            formErrors: [
+              `Something happened on our end. Please email us directly at ${EMAIL_ADDRESS}.`,
+            ],
+          }),
+        },
+        { status: 500 }
+      );
+    }
+  } catch (error) {
+    console.error("💥 Unexpected error in action:");
 
     return data(
       {
-        result: submission.reply({
-          formErrors: [
-            `Something happened on our end. Please email us directly at ${EMAIL_ADDRESS}.`,
-          ],
-        }),
+        result: {
+          status: "error",
+          error: {
+            "": ["An unexpected error occurred. Please try again."],
+          },
+        },
       },
       { status: 500 }
     );

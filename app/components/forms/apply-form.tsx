@@ -50,15 +50,15 @@ export function ApplyForm({ className }: { className?: string }) {
   const isSubmitting = navigation.state === "submitting";
 
   const [form, fields] = useForm({
-    id: "apply-form",
+    // @bug-fix – Removing the ID prop is the only way to get the
+    // form to submit. Really nasty bug.
+    // id: "careers-apply-form",
     constraint: getZodConstraint(ApplyFormSchema),
     lastResult: actionData?.result,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: ApplyFormSchema });
     },
     shouldRevalidate: "onBlur",
-    // @todo – This prop doesn't work, how to send attachment with @conform/react ?
-    // encType: "multipart/form-data", // Required for file uploads
   });
 
   React.useEffect(() => {
@@ -74,10 +74,10 @@ export function ApplyForm({ className }: { className?: string }) {
   return (
     <div className={cn("w-full", className)}>
       <Form
-        {...getFormProps(form)}
         method="POST"
         encType="multipart/form-data"
         className="flex flex-col items-center gap-10 md:gap-4 w-full"
+        {...getFormProps(form)}
       >
         {/* Honeypot inputs for spam protection - these would be rendered as hidden inputs */}
         <div style={{ display: "none" }}>
@@ -143,32 +143,31 @@ export function ApplyForm({ className }: { className?: string }) {
         </div>
 
         <fieldset className="flex items-center gap-3 mr-auto">
-          <label
-            htmlFor={fields.resume.id}
-            className={cn(
-              "flex items-center gap-2 text-base md:text-lg min-w-fit cursor-pointer hover:underline",
-              fields.resume.errors && "text-destructive"
-            )}
-          >
-            <Paperclip />
-            Attach resume
-          </label>
-          <input
-            {...getInputProps(fields.resume, { type: "file" })}
-            accept=".pdf,.doc,.docx"
-            className="hidden"
-            onChange={(e) => {
-              // Update your local state
-              const file = e.target.files?.[0];
-              setSelectedFile(file ? file.name : "");
-
-              // Trigger Conform validation manually
-              form.validate({ name: fields.resume.name });
-            }}
-          />
+          <div className="relative">
+            <input
+              accept=".pdf,.doc,.docx"
+              required
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                setSelectedFile(file ? file.name : "");
+              }}
+              {...getInputProps(fields.resume, { type: "file" })}
+            />
+            <label
+              htmlFor={fields.resume.id}
+              className={cn(
+                "flex items-center gap-2 text-base md:text-lg min-w-fit cursor-pointer hover:underline truncate",
+                fields.resume.errors && "text-destructive"
+              )}
+            >
+              <Paperclip />
+              Attach resume
+            </label>
+          </div>
 
           {selectedFile && (
-            <span className="text-sm text-foreground/50 truncate">
+            <span className="text-sm text-foreground/50 line-clamp-2">
               {selectedFile}
             </span>
           )}

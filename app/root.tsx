@@ -5,8 +5,12 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
+  data,
 } from "react-router";
 import { Layout as DefaultLayout } from "./components/layout";
+import { HoneypotProvider } from "remix-utils/honeypot/react";
+import { honeypot } from "~/lib/utils/honeypot.server";
 
 import type { Route } from "./+types/root";
 import "./styles/index.css";
@@ -28,6 +32,14 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
+export async function loader({ request }: Route.LoaderArgs) {
+  const honeyProps = await honeypot.getInputProps();
+
+  return data({
+    honeyProps,
+  });
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -47,18 +59,22 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return (
-    <Toast.Provider>
-      <DefaultLayout>
-        <Outlet />
+  const data = useLoaderData<typeof loader>();
 
-        <Toast.Portal>
-          <Toast.Viewport className="fixed top-auto mx-auto flex md:right-8 md:bottom-8 md:w-80">
-            <ToastList />
-          </Toast.Viewport>
-        </Toast.Portal>
-      </DefaultLayout>
-    </Toast.Provider>
+  return (
+    <HoneypotProvider {...data.honeyProps}>
+      <Toast.Provider>
+        <DefaultLayout>
+          <Outlet />
+
+          <Toast.Portal>
+            <Toast.Viewport className="fixed top-auto mx-auto flex md:right-8 md:bottom-8 md:w-80">
+              <ToastList />
+            </Toast.Viewport>
+          </Toast.Portal>
+        </DefaultLayout>
+      </Toast.Provider>
+    </HoneypotProvider>
   );
 }
 

@@ -24,10 +24,16 @@ const resendSuccessSchema = z.object({
 
 export async function sendEmail({
   react,
+  attachments,
   ...options
 }: {
   to: string;
   subject: string;
+  attachments?: {
+    filename: string;
+    content: Buffer;
+    contentType?: string;
+  }[];
 } & (
   | { html: string; text: string; react?: never }
   | { react: ReactElement; html?: never; text?: never }
@@ -38,6 +44,7 @@ export async function sendEmail({
     from,
     ...options,
     ...(react ? await renderReactEmail(react) : null),
+    ...(attachments && { attachments }),
   };
 
   // feel free to remove this condition once you've set up resend
@@ -48,7 +55,7 @@ export async function sendEmail({
     );
     console.error(
       `Would have sent the following email:`,
-      JSON.stringify(email)
+      JSON.stringify(email, null, 2)
     );
     return {
       status: "success",

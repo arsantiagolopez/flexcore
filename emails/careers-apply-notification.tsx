@@ -6,14 +6,12 @@ export default function CareersApplyNotification({
   emailAddress,
   phoneNumber,
   message,
-  resumeUrl,
   submissionDate,
 }: {
   fullName: string;
   emailAddress: string;
   phoneNumber?: string;
   message?: string;
-  resumeUrl?: string;
   submissionDate: string;
 }) {
   return (
@@ -94,6 +92,17 @@ export default function CareersApplyNotification({
           <strong>Email Address:</strong> {emailAddress}
         </E.Text>
 
+        {/* Resume */}
+        <E.Text
+          style={{
+            fontSize: "16px",
+            color: "#000000",
+            margin: "0 0 8px 0",
+          }}
+        >
+          <strong>Resume:</strong> Resume attached below 📎
+        </E.Text>
+
         <E.Text
           style={{
             fontSize: "16px",
@@ -116,39 +125,6 @@ export default function CareersApplyNotification({
             `"${message}"`
           ) : (
             <span className="italic">No message was provided</span>
-          )}
-        </E.Text>
-
-        {/* Resume section */}
-        <E.Text
-          style={{
-            fontSize: "16px",
-            color: "#000000",
-            margin: "0 0 8px 0",
-          }}
-        >
-          <strong>Resume:</strong>
-        </E.Text>
-
-        <E.Text
-          style={{
-            fontSize: "16px",
-            color: "#000000",
-            margin: "0 0 16px 0",
-          }}
-        >
-          {resumeUrl ? (
-            <E.Link
-              href={resumeUrl}
-              style={{
-                color: "#8b7355",
-                textDecoration: "underline",
-              }}
-            >
-              Link to Uploaded Resume
-            </E.Link>
-          ) : (
-            'Resume attached or "Resume attached" if included in email system'
           )}
         </E.Text>
 
