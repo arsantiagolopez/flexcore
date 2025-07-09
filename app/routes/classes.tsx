@@ -55,7 +55,7 @@ export default function ClassesRoute() {
   return (
     <div className="flex flex-col">
       <section className="flex flex-col items-center gap-16 md:gap-12 p-8 py-20 md:p-20 md:py-32">
-        <h1 className="text-3xl md:text-5xl font-bold">Classes</h1>
+        <h1 className="text-3xl md:text-5xl font-bold">CLASSES</h1>
         <div className="flex flex-col gap-20 md:gap-4 w-full">
           {classes.map(({ id, label, image, content }) => (
             <ClassLayout

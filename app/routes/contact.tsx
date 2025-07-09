@@ -119,11 +119,11 @@ export default function ContactRoute() {
             className="size-full object-cover min-h-[92dvh]"
             priority={true}
           />
-          <div className="absolute flex flex-col items-center justify-center gap-5 text-center select-none">
+          <div className="absolute top-[13%] md:top-[11%] md:right-[27%] flex flex-col items-center justify-center gap-2 text-center select-none">
             <h2 className="text-3xl md:text-4xl text-overlay-foreground tracking-tight italic">
               Connect with us
             </h2>
-            <div className="flex items-center gap-6 text-overlay-foreground">
+            <div className="flex items-center gap-4 text-overlay-foreground">
               <EmailLink
                 email={EMAIL_ADDRESS}
                 subject={EMAIL_SUBJECT}

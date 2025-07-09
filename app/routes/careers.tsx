@@ -7,6 +7,7 @@ import { parseWithZod } from "@conform-to/zod";
 import { sendEmail } from "~/lib/utils/email.server";
 import { CareersApplyConfirmation, CareersApplyNotification } from "emails";
 import { EMAIL_ADDRESS } from "~/lib/utils/constants";
+import { Separator } from "@base-ui-components/react";
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
@@ -109,8 +110,8 @@ export default function CareersRoute() {
       <div className="hidden md:flex flex-col">
         <div className="flex items-center gap-4 w-full mt-32 md:mt-32">
           <div className="h-1 w-full bg-overlay-foreground" />
-          <h1 className="text-3xl md:text-3xl font-bold italic tracking-tight truncate min-w-44 text-center">
-            We're hiring!
+          <h1 className="text-3xl md:text-3xl font-bold tracking-tight truncate min-w-60 text-center">
+            WE'RE HIRING!
           </h1>
           <div className="h-1 w-full bg-overlay-foreground" />
         </div>
@@ -120,21 +121,23 @@ export default function CareersRoute() {
             <div className="relative flex items-center justify-center overflow-hidden rounded-[76px] w-4/5">
               <Image
                 src="/assets/images/5.webp"
-                alt="Connect with us image"
+                alt="Join our team image"
                 className="size-full object-cover"
                 priority={true}
               />
-              <h2 className="absolute top-20 text-4xl text-foreground tracking-tight italic select-none">
-                Join our team!
+              <h2 className="absolute top-20 text-3xl text-foreground font-bold tracking-tight select-none">
+                JOIN OUR TEAM!
               </h2>
             </div>
           </div>
 
           <div className="col-span-1 flex justify-start">
-            <div className="flex flex-col items-center gap-14 md:gap-12 md:p-10 rounded-4xl md:rounded-[76px] md:border-[6px] border-overlay-foreground max-w-[475px]">
-              <p className="text-center text-2xl">Apply below!</p>
+            <div className="flex flex-col items-center rounded-4xl md:rounded-[76px] md:border-[6px] border-overlay-foreground max-w-[475px]">
+              <p className="text-center text-2xl p-10 pb-8">Apply below!</p>
 
-              <ApplyForm />
+              <Separator className="shrink-0 h-1 w-full bg-overlay-foreground" />
+
+              <ApplyForm className="p-10 pt-8" />
 
               <div className="flex flex-col items-center gap-5 -mt-6">
                 <p className="text-center text-lg">
@@ -165,12 +168,12 @@ function MobileContent() {
         <div className="md:col-span-6 relative flex items-center justify-center overflow-hidden">
           <Image
             src="/assets/images/5.webp"
-            alt="Connect with us image"
+            alt="Join our team image"
             className="size-full object-cover min-h-[92dvh]"
             priority={true}
           />
-          <h2 className="absolute top-32 text-3xl text-foreground tracking-tight italic select-none">
-            Join our team!
+          <h2 className="absolute top-24 text-3xl text-foreground font-bold tracking-tight select-none">
+            JOIN OUR TEAM
           </h2>
         </div>
 
@@ -178,7 +181,7 @@ function MobileContent() {
           <div className="flex flex-col items-center gap-14 md:gap-12 md:p-10 rounded-4xl md:rounded-[76px] md:border-[6px] border-overlay-foreground max-w-[475px]">
             <p className="text-center text-2xl">Apply below!</p>
 
-            {/* <ApplyForm /> */}
+            <ApplyForm />
 
             <div className="flex flex-col items-center gap-14 -mt-4">
               <p className="text-center text-lg">

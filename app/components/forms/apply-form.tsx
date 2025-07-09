@@ -38,7 +38,7 @@ export const ApplyFormSchema = z.object({
     ),
 });
 
-export function ApplyForm() {
+export function ApplyForm({ className }: { className?: string }) {
   const actionData = useActionData<{
     result?: SubmissionResult;
     success?: boolean;
@@ -72,7 +72,7 @@ export function ApplyForm() {
   }, [actionData]);
 
   return (
-    <div className="w-full">
+    <div className={cn("w-full", className)}>
       <Form
         {...getFormProps(form)}
         method="POST"
