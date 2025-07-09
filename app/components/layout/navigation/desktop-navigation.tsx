@@ -13,6 +13,12 @@ import { NavigationMenu } from "@base-ui-components/react/navigation-menu";
 import { ChevronDown } from "lucide-react";
 import { routes } from "~/lib/utils/nav-links";
 
+const STATIC_ROUTES = [
+  "/privacy-policy",
+  "/terms-and-conditions",
+  "/job-applicant-privacy-notice",
+];
+
 export function DesktopNavigation() {
   const isHydrated = useIsHydrated();
   const [StickyHeadroom, setStickyHeadroom] = React.useState<
@@ -112,7 +118,12 @@ export function HeaderContent({
 
   // Determine current text color based on route config and scroll state
   const getCurrentTextColor = () => {
-    const routeConfig = getCurrentRouteConfig();
+    let routeConfig = getCurrentRouteConfig();
+
+    if (STATIC_ROUTES.includes(location.pathname)) {
+      routeConfig.defaultColor = "black";
+    }
+
     const { defaultColor, enableScrollEffect } = routeConfig;
 
     // If scroll effect is disabled, always use the default color
