@@ -1,6 +1,6 @@
 import { MapPin } from "lucide-react";
 import { Image } from "../image";
-import { Link } from "react-router";
+import { NavLink } from "react-router";
 import { ADDRESS } from "~/lib/utils/constants";
 import { Separator } from "@base-ui-components/react";
 import { routes } from "~/lib/utils/nav-links";
@@ -32,36 +32,36 @@ export function Footer() {
             if (!to && items) {
               return items.map(({ id, to, label }) => (
                 <li key={id}>
-                  <a href={to} className={cn(baseStyles)}>
+                  <NavLink to={to} className={cn(baseStyles)}>
                     {label}
-                  </a>
+                  </NavLink>
                 </li>
               ));
             }
 
             return (
               <li key={id}>
-                <a href={to} className={cn(baseStyles)}>
+                <NavLink to={to} className={cn(baseStyles)}>
                   {label}
-                </a>
+                </NavLink>
               </li>
             );
           })}
         </ul>
         <span>© Flexcore Pilates Studio {year}. All rights reserved.</span>
         <div className="flex items-center gap-5">
-          <Link
+          <NavLink
             to="/terms-and-conditions"
             className="underline hover:opacity-70 truncate"
           >
             Terms and Conditions
-          </Link>
-          <Link
+          </NavLink>
+          <NavLink
             to="/privacy-policy"
             className="underline hover:opacity-70 truncate"
           >
             Privacy Policy
-          </Link>
+          </NavLink>
         </div>
       </div>
 

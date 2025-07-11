@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router";
+import { Link, NavLink } from "react-router";
 import { Image } from "~/components/image";
 import { cn } from "~/lib/utils";
 import { ADDRESS, EMAIL_ADDRESS } from "~/lib/utils/constants";
@@ -119,14 +119,14 @@ export function MobileNavigation() {
                       <Accordion.Panel className="overflow-hidden transition-all duration-300 ease-in-out data-[starting-style]:opacity-0 data-[starting-style]:max-h-0 data-[ending-style]:opacity-0 data-[ending-style]:max-h-0 data-[open]:opacity-100 data-[open]:max-h-96">
                         <div className="pt-4 pl-4">
                           {item.items.map((subItem) => (
-                            <a
+                            <NavLink
                               key={subItem.label}
-                              href={subItem.to}
+                              to={subItem.to}
                               className="block py-1.5 text-overlay-foreground drop-shadow-md text-lg font-light tracking-wide hover:opacity-70 transition-opacity duration-200"
                               onClick={toggleMenu}
                             >
                               {subItem.label}
-                            </a>
+                            </NavLink>
                           ))}
                         </div>
                       </Accordion.Panel>
@@ -137,9 +137,9 @@ export function MobileNavigation() {
 
               // Handle regular navigation items
               return (
-                <a
+                <NavLink
                   key={item.label}
-                  href={item.to}
+                  to={item.to!}
                   className={cn(
                     "block uppercase text-overlay-foreground drop-shadow-md text-2xl font-light tracking-wide hover:opacity-70 transition-opacity duration-200 transform-gpu",
                     !isMenuOpen && "opacity-0",
@@ -150,7 +150,7 @@ export function MobileNavigation() {
                   onClick={toggleMenu}
                 >
                   {item.label}
-                </a>
+                </NavLink>
               );
             })}
           </div>
