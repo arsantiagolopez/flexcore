@@ -141,11 +141,5 @@ export function meta({}: Route.MetaArgs) {
       name: "Job Applicant Privacy Notice",
       content: "Welcome Flexcore Pilates Studio!",
     },
-    {
-      tagName: "link",
-      rel: "preload",
-      href: "/assets/images/hero.webp",
-      as: "image",
-    },
   ];
 }

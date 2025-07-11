@@ -9,11 +9,6 @@ import { cn } from "~/lib/utils";
 export function Footer() {
   const year = new Date().getFullYear();
 
-  // @todo – Abstract and link this to other navigation components
-  const handleJoinNowClick = () => {
-    // @todo – Add code here to link to JOIN NOW
-  };
-
   const baseStyles =
     "uppercase truncate hover:opacity-70 transition-colors duration-300 ease-in-out";
 
@@ -34,18 +29,6 @@ export function Footer() {
       <div className="flex flex-col items-center justify-center gap-8 md:gap-5 text-sm md:text-base px-10 md:px-20 pb-14 md:pb-20 font-semibold">
         <ul className="flex items-center justify-center flex-wrap gap-x-4 gap-y-1.5 md:gap-6">
           {routes.map(({ id, to, label, items }) => {
-            if (id === "join") {
-              return (
-                <button
-                  key={id}
-                  onClick={handleJoinNowClick}
-                  className={cn(baseStyles)}
-                >
-                  {label}
-                </button>
-              );
-            }
-
             if (!to && items) {
               return items.map(({ id, to, label }) => (
                 <li key={id}>

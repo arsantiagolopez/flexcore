@@ -293,11 +293,5 @@ export function meta({}: Route.MetaArgs) {
       name: "Terms and Conditions",
       content: "Welcome Flexcore Pilates Studio!",
     },
-    {
-      tagName: "link",
-      rel: "preload",
-      href: "/assets/images/hero.webp",
-      as: "image",
-    },
   ];
 }

@@ -45,5 +45,10 @@ export const routes = [
       },
     ],
   },
-  { id: "join", to: "#", label: "Join now", defaultColor: "black" as const },
+  {
+    id: "join",
+    to: "/join",
+    label: "Join now",
+    defaultColor: "black" as const,
+  },
 ];

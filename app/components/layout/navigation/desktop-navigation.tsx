@@ -1,6 +1,6 @@
 import React from "react";
 import { useIsHydrated } from "~/hooks/use-is-hydrated";
-import { NavLink, useLocation } from "react-router";
+import { Link, NavLink, useLocation } from "react-router";
 import { useScrollThreshold } from "~/hooks/use-scroll-threshold";
 import { cn } from "~/lib/utils";
 import {
@@ -10,7 +10,7 @@ import {
 } from "~/lib/utils/constants";
 import { EmailLink, InstagramLink } from "./navigation";
 import { NavigationMenu } from "@base-ui-components/react/navigation-menu";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, CircleUserRound } from "lucide-react";
 import { routes } from "~/lib/utils/nav-links";
 
 const STATIC_ROUTES = [
@@ -55,10 +55,6 @@ export function HeaderContent({
 
   const hasScrolledPastThreshold = useScrollThreshold(scrollHeightDvh);
   const location = useLocation();
-
-  const handleJoinNowClick = () => {
-    // @todo – Add code here to link to JOIN NOW
-  };
 
   // Get the current route configuration
   const getCurrentRouteConfig = () => {
@@ -111,7 +107,7 @@ export function HeaderContent({
       id: "default",
       to: "/",
       label: "Default",
-      defaultColor: "white" as const,
+      defaultColor: "black" as const,
       enableScrollEffect: false,
     };
   };
@@ -191,20 +187,6 @@ export function HeaderContent({
               );
             }
 
-            // Handle Join button
-            if (id === "join") {
-              return (
-                <NavigationMenu.Item key={id}>
-                  <button
-                    onClick={handleJoinNowClick}
-                    className={cn(baseStyles, activeTextColorClass)}
-                  >
-                    {label}
-                  </button>
-                </NavigationMenu.Item>
-              );
-            }
-
             // Handle regular navigation items
             return (
               <NavigationMenu.Item key={id}>
@@ -246,6 +228,12 @@ export function HeaderContent({
           handle={INSTAGRAM_USERNAME}
           className={activeTextColorClass}
         />
+        <Link to="/account">
+          <CircleUserRound
+            strokeWidth={2}
+            className={cn("size-8", activeTextColorClass)}
+          />
+        </Link>
       </div>
     </header>
   );

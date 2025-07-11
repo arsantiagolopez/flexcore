@@ -100,11 +100,5 @@ export function meta({}: Route.MetaArgs) {
   return [
     { title: "Classes | Flexcore Pilates Studio" },
     { name: "Classes", content: "Welcome Flexcore Pilates Studio!" },
-    {
-      tagName: "link",
-      rel: "preload",
-      href: "/assets/images/hero.webp",
-      as: "image",
-    },
   ];
 }

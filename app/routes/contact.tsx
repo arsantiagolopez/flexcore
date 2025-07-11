@@ -161,7 +161,7 @@ export function meta({}: Route.MetaArgs) {
     {
       tagName: "link",
       rel: "preload",
-      href: "/assets/images/hero.webp",
+      href: "/assets/images/4.webp",
       as: "image",
     },
   ];
