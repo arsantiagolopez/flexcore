@@ -29,7 +29,7 @@ export function MobileNavigation() {
       <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4 bg-transparent">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/">
+          <Link to="/" onClick={toggleMenu}>
             <Image
               alt="Logo"
               src="/assets/images/logo-white.webp"
@@ -123,7 +123,7 @@ export function MobileNavigation() {
                               key={subItem.label}
                               href={subItem.to}
                               className="block py-1.5 text-overlay-foreground drop-shadow-md text-lg font-light tracking-wide hover:opacity-70 transition-opacity duration-200"
-                              onClick={() => toggleMenu()}
+                              onClick={toggleMenu}
                             >
                               {subItem.label}
                             </a>
@@ -147,7 +147,7 @@ export function MobileNavigation() {
                       ? `animate-in fade-in-0 slide-in-from-top-4 duration-700 ${openingDelays[index]}`
                       : `animate-out fade-out duration-500 ${closingDelays[index]}`
                   )}
-                  onClick={() => toggleMenu()}
+                  onClick={toggleMenu}
                 >
                   {item.label}
                 </NavLink>
