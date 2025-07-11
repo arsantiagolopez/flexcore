@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, NavLink } from "react-router";
+import { Link } from "react-router";
 import { Image } from "~/components/image";
 import { cn } from "~/lib/utils";
 import { ADDRESS, EMAIL_ADDRESS } from "~/lib/utils/constants";
@@ -137,7 +137,7 @@ export function MobileNavigation() {
 
               // Handle regular navigation items
               return (
-                <NavLink
+                <Link
                   key={item.label}
                   to={item.to!}
                   className={cn(
@@ -150,7 +150,7 @@ export function MobileNavigation() {
                   onClick={toggleMenu}
                 >
                   {item.label}
-                </NavLink>
+                </Link>
               );
             })}
           </div>

@@ -1,6 +1,6 @@
 import { MapPin } from "lucide-react";
 import { Image } from "../image";
-import { Link, NavLink } from "react-router";
+import { Link } from "react-router";
 import { ADDRESS } from "~/lib/utils/constants";
 import { Separator } from "@base-ui-components/react";
 import { routes } from "~/lib/utils/nav-links";
@@ -32,18 +32,18 @@ export function Footer() {
             if (!to && items) {
               return items.map(({ id, to, label }) => (
                 <li key={id}>
-                  <NavLink to={to} className={cn(baseStyles)}>
+                  <Link to={to} className={cn(baseStyles)}>
                     {label}
-                  </NavLink>
+                  </Link>
                 </li>
               ));
             }
 
             return (
               <li key={id}>
-                <NavLink to={to} className={cn(baseStyles)}>
+                <Link to={to} className={cn(baseStyles)}>
                   {label}
-                </NavLink>
+                </Link>
               </li>
             );
           })}

@@ -228,7 +228,10 @@ export function HeaderContent({
           handle={INSTAGRAM_USERNAME}
           className={activeTextColorClass}
         />
-        <Link to="/account">
+        <Link
+          to="/account"
+          className="hover:opacity-70 transition-colors duration-300 ease-in-out"
+        >
           <CircleUserRound
             strokeWidth={2}
             className={cn("size-8", activeTextColorClass)}
