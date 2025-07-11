@@ -137,9 +137,9 @@ export function MobileNavigation() {
 
               // Handle regular navigation items
               return (
-                <Link
+                <a
                   key={item.label}
-                  to={item.to!}
+                  href={item.to}
                   className={cn(
                     "block uppercase text-overlay-foreground drop-shadow-md text-2xl font-light tracking-wide hover:opacity-70 transition-opacity duration-200 transform-gpu",
                     !isMenuOpen && "opacity-0",
@@ -150,7 +150,7 @@ export function MobileNavigation() {
                   onClick={toggleMenu}
                 >
                   {item.label}
-                </Link>
+                </a>
               );
             })}
           </div>

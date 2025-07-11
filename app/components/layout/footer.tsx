@@ -32,18 +32,18 @@ export function Footer() {
             if (!to && items) {
               return items.map(({ id, to, label }) => (
                 <li key={id}>
-                  <Link to={to} className={cn(baseStyles)}>
+                  <a href={to} className={cn(baseStyles)}>
                     {label}
-                  </Link>
+                  </a>
                 </li>
               ));
             }
 
             return (
               <li key={id}>
-                <Link to={to} className={cn(baseStyles)}>
+                <a href={to} className={cn(baseStyles)}>
                   {label}
-                </Link>
+                </a>
               </li>
             );
           })}
