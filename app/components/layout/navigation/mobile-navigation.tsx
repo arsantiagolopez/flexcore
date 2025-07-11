@@ -1,11 +1,21 @@
 import React from "react";
-import { Link } from "react-router";
+import { Link, NavLink } from "react-router";
 import { Image } from "~/components/image";
 import { cn } from "~/lib/utils";
 import { ADDRESS, EMAIL_ADDRESS } from "~/lib/utils/constants";
 import { routes } from "~/lib/utils/nav-links";
 import { Accordion } from "@base-ui-components/react/accordion";
 import { ChevronDown } from "lucide-react";
+
+const mobileRoutesWithAccount = [
+  ...routes,
+  {
+    id: "account",
+    to: "/account",
+    label: "Account",
+    defaultColor: "black" as const,
+  },
+];
 
 export function MobileNavigation() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -68,7 +78,7 @@ export function MobileNavigation() {
         <div className="flex flex-col justify-end gap-20 h-full px-12 py-20">
           {/* Navigation Items */}
           <div className="space-y-4">
-            {routes.map((item, index) => {
+            {mobileRoutesWithAccount.map((item, index) => {
               const openingDelays = [
                 "delay-0",
                 "delay-[50ms]",
@@ -76,8 +86,10 @@ export function MobileNavigation() {
                 "delay-[150ms]",
                 "delay-[200ms]",
                 "delay-[250ms]",
+                "delay-[300ms]",
               ];
               const closingDelays = [
+                "delay-[250ms]",
                 "delay-[200ms]",
                 "delay-[150ms]",
                 "delay-[100ms]",
@@ -125,9 +137,9 @@ export function MobileNavigation() {
 
               // Handle regular navigation items
               return (
-                <a
+                <NavLink
                   key={item.label}
-                  href={item.to}
+                  to={item.to!}
                   className={cn(
                     "block uppercase text-overlay-foreground drop-shadow-md text-2xl font-light tracking-wide hover:opacity-70 transition-opacity duration-200 transform-gpu",
                     !isMenuOpen && "opacity-0",
@@ -138,7 +150,7 @@ export function MobileNavigation() {
                   onClick={() => toggleMenu()}
                 >
                   {item.label}
-                </a>
+                </NavLink>
               );
             })}
           </div>
