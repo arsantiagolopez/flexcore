@@ -28,7 +28,7 @@ export function MobileNavigation() {
       <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4 bg-transparent">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <a href="/" onClick={toggleMenu}>
+          <a href="/" onClick={() => setIsMenuOpen(false)}>
             <Image
               alt="Logo"
               src="/assets/images/logo-white.webp"
