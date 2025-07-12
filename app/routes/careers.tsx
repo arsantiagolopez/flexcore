@@ -1,7 +1,7 @@
 import type { Route } from "./+types/careers";
 import { ApplyForm, ApplyFormSchema } from "~/components/forms";
 import { Image } from "~/components/image";
-import { data, Link } from "react-router";
+import { data } from "react-router";
 import { checkHoneypot } from "~/lib/utils/honeypot.server";
 import { sendEmail } from "~/lib/utils/email.server";
 import { CareersApplyConfirmation, CareersApplyNotification } from "emails";
@@ -190,12 +190,12 @@ export default function CareersRoute() {
               <div className="flex flex-col items-center gap-5 -mt-6">
                 <p className="text-center text-lg">
                   Refer to the{" "}
-                  <Link
-                    to="/job-applicant-privacy-notice"
+                  <a
+                    href="/job-applicant-privacy-notice"
                     className="text-base underline"
                   >
                     Job Applicant Privacy Notice
-                  </Link>
+                  </a>
                 </p>
                 <p className="text-2xl font-brittany">
                   The flexcore pilates team
@@ -234,12 +234,12 @@ function MobileContent() {
             <div className="flex flex-col items-center gap-14 -mt-4">
               <p className="text-center text-lg">
                 Refer to the{" "}
-                <Link
-                  to="/job-applicant-privacy-notice"
+                <a
+                  href="/job-applicant-privacy-notice"
                   className="text-base underline"
                 >
                   Job Applicant Privacy Notice
-                </Link>
+                </a>
               </p>
               <p className="text-2xl font-brittany">
                 The flexcore pilates team

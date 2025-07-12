@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router";
 import { Image } from "~/components/image";
 import { cn } from "~/lib/utils";
 import { ADDRESS, EMAIL_ADDRESS } from "~/lib/utils/constants";
@@ -29,13 +28,13 @@ export function MobileNavigation() {
       <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4 bg-transparent">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" onClick={toggleMenu}>
+          <a href="/" onClick={toggleMenu}>
             <Image
               alt="Logo"
               src="/assets/images/logo-white.webp"
               className="w-14"
             />
-          </Link>
+          </a>
 
           {/* Burger Menu Button */}
           <button

@@ -1,6 +1,6 @@
 import React from "react";
 import { useIsHydrated } from "~/hooks/use-is-hydrated";
-import { Link, useLocation } from "react-router";
+import { useLocation } from "react-router";
 import { useScrollThreshold } from "~/hooks/use-scroll-threshold";
 import { cn } from "~/lib/utils";
 import {
@@ -232,16 +232,15 @@ export function HeaderContent({
           handle={INSTAGRAM_USERNAME}
           className={activeTextColorClass}
         />
-        <Link
-          to="/account"
+        <a
+          href="/account"
           className="hover:opacity-70 transition-colors duration-300 ease-in-out"
-          reloadDocument
         >
           <CircleUserRound
             strokeWidth={2}
             className={cn("size-8", activeTextColorClass)}
           />
-        </Link>
+        </a>
       </div>
     </header>
   );
