@@ -52,71 +52,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
           dangerouslySetInnerHTML={{
             __html: `
               (function () {
-                try {
-                  console.log('🚀 Starting Mariana script loading...');
-                  
-                  // Only load if not already loaded
-                  if (window.__marianaScriptsLoaded) {
-                    console.log('✅ Mariana scripts already loaded');
-                    return;
-                  }
-                  
                   var TENANT_NAME = 'flexcorepilates';
                   var d = document;
                   var sA = ['polyfills', 'js'];
-                  var loadedCount = 0;
-                  
-                  function initMariana() {
-                    try {
-                      console.log('🔄 Attempting to initialize Mariana...');
-                      if (window.__initMTIntegrations) {
-                        window.__initMTIntegrations();
-                        console.log('✅ Called __initMTIntegrations');
-                        
-                        // Check if MTIntegrations was created
-                        if (window.MTIntegrations) {
-                          console.log('✅ MTIntegrations is available');
-                          window.__marianaReady = true;
-                        } else {
-                          console.log('⚠️ MTIntegrations not available yet, retrying...');
-                          setTimeout(initMariana, 500);
-                        }
-                      } else {
-                        console.log('⚠️ __initMTIntegrations not available yet, retrying...');
-                        setTimeout(initMariana, 500);
-                      }
-                    } catch (e) {
-                      console.warn('❌ Mariana init error:', e);
-                    }
-                  }
-                  
                   for (var i = 0; i < sA.length; i++) {
-                    var s = d.createElement('script');
-                    s.src = 'https://' + TENANT_NAME + '.marianaiframes.com/' + sA[i];
-                    s.setAttribute('data-timestamp', +new Date());
-                    
-                    console.log('📦 Loading script:', s.src);
-                    
-                    s.onload = function() {
-                      loadedCount++;
-                      console.log('✅ Script loaded (' + loadedCount + '/' + sA.length + '):', this.src);
-                      
-                      if (loadedCount === sA.length) {
-                        console.log('🎉 All scripts loaded, initializing...');
-                        window.__marianaScriptsLoaded = true;
-                        setTimeout(initMariana, 200);
-                      }
-                    };
-                    
-                    s.onerror = function(e) {
-                      console.warn('❌ Mariana script failed to load:', e.target.src);
-                    };
-                    
-                    (d.head || d.body).appendChild(s);
+                      var s = d.createElement('script');
+                      s.src = 'https://' + TENANT_NAME + '.marianaiframes.com/' + sA[i];
+                      s.setAttribute('data-timestamp', +new Date());
+                      (d.head || d.body).appendChild(s);
                   }
-                } catch (e) {
-                  console.warn('❌ Error loading Mariana scripts:', e);
-                }
               })();
             `,
           }}
@@ -126,6 +70,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="root">{children}</div>
         <ScrollRestoration />
         <Scripts />
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://marianatek.com/?ref_noscript" rel="nofollow">
+            Web Integrations by Mariana Tek.
+          </a>
+        </noscript>
       </body>
     </html>
   );

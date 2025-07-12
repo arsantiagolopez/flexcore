@@ -1,12 +1,8 @@
 import React from "react";
-import { Link, NavLink } from "react-router";
+import { Link } from "react-router";
 import { Image } from "~/components/image";
 import { cn } from "~/lib/utils";
-import {
-  ADDRESS,
-  EMAIL_ADDRESS,
-  MARIANATEK_ROUTES,
-} from "~/lib/utils/constants";
+import { ADDRESS, EMAIL_ADDRESS } from "~/lib/utils/constants";
 import { routes } from "~/lib/utils/nav-links";
 import { Accordion } from "@base-ui-components/react/accordion";
 import { ChevronDown } from "lucide-react";
@@ -123,17 +119,14 @@ export function MobileNavigation() {
                       <Accordion.Panel className="overflow-hidden transition-all duration-300 ease-in-out data-[starting-style]:opacity-0 data-[starting-style]:max-h-0 data-[ending-style]:opacity-0 data-[ending-style]:max-h-0 data-[open]:opacity-100 data-[open]:max-h-96">
                         <div className="pt-4 pl-4">
                           {item.items.map((subItem) => (
-                            <NavLink
+                            <a
                               key={subItem.label}
-                              to={subItem.to}
+                              href={subItem.to}
                               className="block py-1.5 text-overlay-foreground drop-shadow-md text-lg font-light tracking-wide hover:opacity-70 transition-opacity duration-200"
                               onClick={toggleMenu}
-                              reloadDocument={MARIANATEK_ROUTES.includes(
-                                subItem.to
-                              )}
                             >
                               {subItem.label}
-                            </NavLink>
+                            </a>
                           ))}
                         </div>
                       </Accordion.Panel>
@@ -144,9 +137,9 @@ export function MobileNavigation() {
 
               // Handle regular navigation items
               return (
-                <NavLink
+                <a
                   key={item.label}
-                  to={item.to!}
+                  href={item.to}
                   className={cn(
                     "block uppercase text-overlay-foreground drop-shadow-md text-2xl font-light tracking-wide hover:opacity-70 transition-opacity duration-200 transform-gpu",
                     !isMenuOpen && "opacity-0",
@@ -155,10 +148,9 @@ export function MobileNavigation() {
                       : `animate-out fade-out duration-500 ${closingDelays[index]}`
                   )}
                   onClick={toggleMenu}
-                  reloadDocument={MARIANATEK_ROUTES.includes(item.to!)}
                 >
                   {item.label}
-                </NavLink>
+                </a>
               );
             })}
           </div>

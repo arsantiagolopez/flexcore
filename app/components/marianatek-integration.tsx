@@ -6,8 +6,6 @@ import { cn } from "~/lib/utils";
 declare global {
   interface Window {
     __initMTIntegrations?: () => void;
-    __marianaScriptsLoaded?: boolean;
-    __marianaReady?: boolean;
     MTIntegrations?: {
       render: () => void;
       destroy?: () => void;
@@ -15,7 +13,52 @@ declare global {
   }
 }
 
-export function MarianatekIntegration({
+// Error Boundary Component
+class IframeErrorBoundary extends React.Component<
+  { children: React.ReactNode; className?: string },
+  { hasError: boolean }
+> {
+  constructor(props: { children: React.ReactNode; className?: string }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    console.error("Iframe error boundary caught:", error);
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error("Iframe error details:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div
+          className={cn(
+            "min-h-[600px] w-full flex items-center justify-center",
+            this.props.className
+          )}
+        >
+          <div className="text-center">
+            <p className="text-gray-600 mb-4">Unable to load content</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Refresh Page
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+function MarianatekIntegrationInner({
   type,
   className,
 }: {
@@ -25,125 +68,149 @@ export function MarianatekIntegration({
   const isHydrated = useIsHydrated();
   const location = useLocation();
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const [isReady, setIsReady] = React.useState(false);
+  const cleanupTimeoutRef = React.useRef<NodeJS.Timeout>(null);
+  const isMobile =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      typeof navigator !== "undefined" ? navigator.userAgent : ""
+    );
 
-  console.log("🔄 MarianatekIntegration render:", {
-    isHydrated,
-    isReady,
-    pathname: location.pathname,
-    hasRef: !!containerRef.current,
-  });
+  // Cleanup function
+  const cleanup = React.useCallback(() => {
+    try {
+      // Clear any pending timeouts
+      if (cleanupTimeoutRef.current) {
+        clearTimeout(cleanupTimeoutRef.current);
+      }
 
-  React.useEffect(() => {
-    console.log("🏗️ MarianatekIntegration effect running...", {
-      isHydrated,
-      hasRef: !!containerRef.current,
-      marianaReady: !!window.__marianaReady,
-      MTIntegrations: !!window.MTIntegrations,
-    });
+      // Clean up current container
+      if (containerRef.current) {
+        containerRef.current.innerHTML = "";
+      }
 
-    if (!isHydrated) {
-      console.log("⏳ Effect early return - not hydrated");
-      return;
-    }
-
-    let attempts = 0;
-    const maxAttempts = 50; // 5 seconds
-
-    const checkAndInitialize = () => {
-      attempts++;
-      console.log(
-        `🔍 Check attempt ${attempts}: scripts=${!!window.__marianaScriptsLoaded}, ready=${!!window.__marianaReady}, init=${!!window.__initMTIntegrations}, MTIntegrations=${!!window.MTIntegrations}`
-      );
-
-      // Check if Mariana is ready - either __marianaReady flag OR both functions are available
+      // Try to destroy MT integrations if available
       if (
-        (window.__marianaReady && window.MTIntegrations) ||
-        (window.__initMTIntegrations && window.MTIntegrations)
+        window.MTIntegrations &&
+        typeof window.MTIntegrations.destroy === "function"
       ) {
         try {
-          console.log("🎯 Mariana is ready! Setting isReady to true");
-          setIsReady(true);
-        } catch (error) {
-          console.error("❌ Error setting ready state:", error);
+          window.MTIntegrations.destroy();
+        } catch (e) {
+          console.warn("Error destroying MT integrations:", e);
         }
-        return;
       }
 
-      // Keep trying if not ready yet
-      if (attempts < maxAttempts) {
-        setTimeout(checkAndInitialize, 100);
-      } else {
-        console.error(
-          "❌ Mariana never became ready after",
-          maxAttempts,
-          "attempts"
+      // Remove all other Mariana elements (aggressive cleanup for mobile)
+      if (isMobile) {
+        const allMarianaElements = document.querySelectorAll(
+          "[data-mariana-integrations]"
         );
+        allMarianaElements.forEach((el) => {
+          if (el !== containerRef.current) {
+            (el as HTMLElement).innerHTML = "";
+          }
+        });
       }
-    };
-
-    // Start checking immediately and then with a small delay
-    checkAndInitialize();
-    setTimeout(checkAndInitialize, 500); // Extra check after 500ms
-
-    return () => {
-      console.log("🧹 Cleaning up MarianatekIntegration");
-      setIsReady(false);
-    };
-  }, [isHydrated, location.pathname, type]);
-
-  // Separate effect for actual initialization after component is ready
-  React.useEffect(() => {
-    if (!isReady || !containerRef.current) return;
-
-    console.log("🎯 Initializing Mariana integration for:", type);
-
-    try {
-      // Clear other elements
-      const existingElements = document.querySelectorAll(
-        `[data-mariana-integrations]:not([data-mariana-integrations="${type}"])`
-      );
-      console.log("🧹 Clearing", existingElements.length, "existing elements");
-      existingElements.forEach((el) => {
-        el.innerHTML = "";
-      });
-
-      // Initialize and render
-      window.__initMTIntegrations?.();
-      window.MTIntegrations?.render();
-      console.log("✅ Mariana integration initialized successfully");
-    } catch (error) {
-      console.error("❌ Mariana init failed:", error);
+    } catch (e) {
+      console.warn("Cleanup error:", e);
     }
+  }, [isMobile]);
 
-    return () => {
+  React.useEffect(() => {
+    if (!isHydrated || !containerRef.current) return;
+
+    // Add global error handlers
+    const handleError = (e: ErrorEvent) => {
+      console.error(
+        "Global error in Mariana integration:",
+        e.error,
+        e.filename,
+        e.lineno
+      );
+    };
+
+    const handleUnhandledRejection = (e: PromiseRejectionEvent) => {
+      console.error(
+        "Unhandled promise rejection in Mariana integration:",
+        e.reason
+      );
+    };
+
+    window.addEventListener("error", handleError);
+    window.addEventListener("unhandledrejection", handleUnhandledRejection);
+
+    const initializeIntegrations = () => {
       try {
-        if (containerRef.current) {
-          containerRef.current.innerHTML = "";
+        // Make sure the element exists in the DOM
+        if (!containerRef.current) {
+          console.warn("Container ref not available");
+          return;
         }
-      } catch (e) {
-        // Silent cleanup
+
+        // Clear only OTHER integration elements, not the current one
+        const existingElements = document.querySelectorAll(
+          `[data-mariana-integrations]:not([data-mariana-integrations="${type}"])`
+        );
+        existingElements.forEach((el) => {
+          el.innerHTML = "";
+        });
+
+        // Check if Mariana scripts are available
+        if (!window.__initMTIntegrations) {
+          console.warn("Mariana __initMTIntegrations not available");
+          return;
+        }
+
+        if (!window.MTIntegrations) {
+          console.warn("Mariana MTIntegrations not available");
+          return;
+        }
+
+        // Initialize the integrations with error handling
+        try {
+          window.__initMTIntegrations();
+
+          if (typeof window.MTIntegrations.render === "function") {
+            window.MTIntegrations.render();
+          } else {
+            console.warn("MTIntegrations.render is not a function");
+          }
+        } catch (integrationError) {
+          console.error(
+            "Error during Mariana integration initialization:",
+            integrationError
+          );
+          throw integrationError; // Re-throw to be caught by error boundary
+        }
+      } catch (error) {
+        console.error("Error in initializeIntegrations:", error);
+        // Don't throw here to prevent crashing the page
       }
     };
-  }, [isReady, type]);
 
-  console.log("🎨 Rendering state:", { isHydrated, isReady });
+    // Use longer delay for mobile devices
+    const initDelay = isMobile ? 200 : 50;
+    cleanupTimeoutRef.current = setTimeout(initializeIntegrations, initDelay);
 
-  if (!isHydrated || !isReady) {
-    console.log("⏳ Showing loading state");
-    return (
-      <div
-        className={cn(
-          "min-h-[600px] w-full flex items-center justify-center",
-          className
-        )}
-      >
-        <div className="text-gray-500">Loading...</div>
-      </div>
-    );
+    // Cleanup function
+    return () => {
+      window.removeEventListener("error", handleError);
+      window.removeEventListener(
+        "unhandledrejection",
+        handleUnhandledRejection
+      );
+      cleanup();
+    };
+  }, [isHydrated, location.pathname, type, cleanup, isMobile]);
+
+  // Additional cleanup on unmount
+  React.useEffect(() => {
+    return cleanup;
+  }, [cleanup]);
+
+  if (!isHydrated) {
+    return <div className={cn("min-h-[600px] w-full", className)} />;
   }
 
-  console.log("✅ Rendering Mariana container");
   return (
     <div
       ref={containerRef}
@@ -151,5 +218,19 @@ export function MarianatekIntegration({
       className={cn("min-h-[600px] size-full", className)}
       suppressHydrationWarning={true}
     />
+  );
+}
+
+export function MarianatekIntegration({
+  type,
+  className,
+}: {
+  type: string;
+  className?: string;
+}) {
+  return (
+    <IframeErrorBoundary className={className}>
+      <MarianatekIntegrationInner type={type} className={className} />
+    </IframeErrorBoundary>
   );
 }

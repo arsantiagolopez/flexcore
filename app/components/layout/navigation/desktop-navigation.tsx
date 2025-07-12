@@ -1,13 +1,12 @@
 import React from "react";
 import { useIsHydrated } from "~/hooks/use-is-hydrated";
-import { Link, NavLink, useLocation } from "react-router";
+import { Link, useLocation } from "react-router";
 import { useScrollThreshold } from "~/hooks/use-scroll-threshold";
 import { cn } from "~/lib/utils";
 import {
   EMAIL_ADDRESS,
   EMAIL_SUBJECT,
   INSTAGRAM_USERNAME,
-  MARIANATEK_ROUTES,
 } from "~/lib/utils/constants";
 import { EmailLink, InstagramLink } from "./navigation";
 import { NavigationMenu } from "@base-ui-components/react/navigation-menu";
@@ -188,18 +187,21 @@ export function HeaderContent({
               );
             }
 
+            const isActive = location.pathname.includes(to!);
+
             // Handle regular navigation items
             return (
               <NavigationMenu.Item key={id}>
-                <NavLink
-                  to={to!}
-                  className={({ isActive }) =>
-                    cn(baseStyles, activeTextColorClass, isActive && "italic")
-                  }
-                  reloadDocument={MARIANATEK_ROUTES.includes(to!)}
+                <a
+                  href={to}
+                  className={cn(
+                    baseStyles,
+                    activeTextColorClass,
+                    isActive && "italic"
+                  )}
                 >
                   {label}
-                </NavLink>
+                </a>
               </NavigationMenu.Item>
             );
           })}
@@ -251,9 +253,7 @@ function CustomNavLink(
   const { to, isActive, className, children, ...rest } = props;
   return (
     <NavigationMenu.Link
-      render={
-        <NavLink to={to} reloadDocument={MARIANATEK_ROUTES.includes(to!)} />
-      }
+      render={<a href={to} />}
       className={className}
       {...rest}
     >

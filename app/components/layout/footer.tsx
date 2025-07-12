@@ -1,7 +1,6 @@
 import { MapPin } from "lucide-react";
 import { Image } from "../image";
-import { NavLink } from "react-router";
-import { ADDRESS, MARIANATEK_ROUTES } from "~/lib/utils/constants";
+import { ADDRESS } from "~/lib/utils/constants";
 import { Separator } from "@base-ui-components/react";
 import { routes } from "~/lib/utils/nav-links";
 import { cn } from "~/lib/utils";
@@ -32,44 +31,36 @@ export function Footer() {
             if (!to && items) {
               return items.map(({ id, to, label }) => (
                 <li key={id}>
-                  <NavLink
-                    to={to}
-                    className={cn(baseStyles)}
-                    reloadDocument={MARIANATEK_ROUTES.includes(to)}
-                  >
+                  <a href={to} className={cn(baseStyles)}>
                     {label}
-                  </NavLink>
+                  </a>
                 </li>
               ));
             }
 
             return (
               <li key={id}>
-                <NavLink
-                  to={to}
-                  className={cn(baseStyles)}
-                  reloadDocument={MARIANATEK_ROUTES.includes(to)}
-                >
+                <a href={to} className={cn(baseStyles)}>
                   {label}
-                </NavLink>
+                </a>
               </li>
             );
           })}
         </ul>
         <span>© Flexcore Pilates Studio {year}. All rights reserved.</span>
         <div className="flex items-center gap-5">
-          <NavLink
-            to="/terms-and-conditions"
+          <a
+            href="/terms-and-conditions"
             className="underline hover:opacity-70 truncate"
           >
             Terms and Conditions
-          </NavLink>
-          <NavLink
-            to="/privacy-policy"
+          </a>
+          <a
+            href="/privacy-policy"
             className="underline hover:opacity-70 truncate"
           >
             Privacy Policy
-          </NavLink>
+          </a>
         </div>
       </div>
 
