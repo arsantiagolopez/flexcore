@@ -1,12 +1,13 @@
 import React from "react";
 import { useLocation } from "react-router";
 import { useIsHydrated } from "~/hooks/use-is-hydrated";
-import { useMarianaScript } from "~/hooks/use-mariana-script";
 import { cn } from "~/lib/utils";
 
 declare global {
   interface Window {
     __initMTIntegrations?: () => void;
+    __marianaScriptsLoaded?: boolean;
+    __marianaReady?: boolean;
     MTIntegrations?: {
       render: () => void;
       destroy?: () => void;
@@ -22,39 +23,100 @@ export function MarianatekIntegration({
   className?: string;
 }) {
   const isHydrated = useIsHydrated();
-  const isScriptLoaded = useMarianaScript();
   const location = useLocation();
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const [isReady, setIsReady] = React.useState(false);
+
+  console.log("🔄 MarianatekIntegration render:", {
+    isHydrated,
+    isReady,
+    pathname: location.pathname,
+    hasRef: !!containerRef.current,
+  });
 
   React.useEffect(() => {
-    if (!isHydrated || !isScriptLoaded || !containerRef.current) return;
+    console.log("🏗️ MarianatekIntegration effect running...", {
+      isHydrated,
+      hasRef: !!containerRef.current,
+      marianaReady: !!window.__marianaReady,
+      MTIntegrations: !!window.MTIntegrations,
+    });
 
-    const initializeIntegrations = () => {
-      try {
-        if (!containerRef.current) return;
+    if (!isHydrated) {
+      console.log("⏳ Effect early return - not hydrated");
+      return;
+    }
 
-        // Clear other elements
-        const existingElements = document.querySelectorAll(
-          `[data-mariana-integrations]:not([data-mariana-integrations="${type}"])`
-        );
-        existingElements.forEach((el) => {
-          el.innerHTML = "";
-        });
+    let attempts = 0;
+    const maxAttempts = 50; // 5 seconds
 
-        // Initialize
-        if (window.__initMTIntegrations && window.MTIntegrations?.render) {
-          window.__initMTIntegrations();
-          window.MTIntegrations.render();
+    const checkAndInitialize = () => {
+      attempts++;
+      console.log(
+        `🔍 Check attempt ${attempts}: scripts=${!!window.__marianaScriptsLoaded}, ready=${!!window.__marianaReady}, init=${!!window.__initMTIntegrations}, MTIntegrations=${!!window.MTIntegrations}`
+      );
+
+      // Check if Mariana is ready - either __marianaReady flag OR both functions are available
+      if (
+        (window.__marianaReady && window.MTIntegrations) ||
+        (window.__initMTIntegrations && window.MTIntegrations)
+      ) {
+        try {
+          console.log("🎯 Mariana is ready! Setting isReady to true");
+          setIsReady(true);
+        } catch (error) {
+          console.error("❌ Error setting ready state:", error);
         }
-      } catch (error) {
-        console.error("Mariana init failed:", error);
+        return;
+      }
+
+      // Keep trying if not ready yet
+      if (attempts < maxAttempts) {
+        setTimeout(checkAndInitialize, 100);
+      } else {
+        console.error(
+          "❌ Mariana never became ready after",
+          maxAttempts,
+          "attempts"
+        );
       }
     };
 
-    const timeoutId = setTimeout(initializeIntegrations, 100);
+    // Start checking immediately and then with a small delay
+    checkAndInitialize();
+    setTimeout(checkAndInitialize, 500); // Extra check after 500ms
 
     return () => {
-      clearTimeout(timeoutId);
+      console.log("🧹 Cleaning up MarianatekIntegration");
+      setIsReady(false);
+    };
+  }, [isHydrated, location.pathname, type]);
+
+  // Separate effect for actual initialization after component is ready
+  React.useEffect(() => {
+    if (!isReady || !containerRef.current) return;
+
+    console.log("🎯 Initializing Mariana integration for:", type);
+
+    try {
+      // Clear other elements
+      const existingElements = document.querySelectorAll(
+        `[data-mariana-integrations]:not([data-mariana-integrations="${type}"])`
+      );
+      console.log("🧹 Clearing", existingElements.length, "existing elements");
+      existingElements.forEach((el) => {
+        el.innerHTML = "";
+      });
+
+      // Initialize and render
+      window.__initMTIntegrations?.();
+      window.MTIntegrations?.render();
+      console.log("✅ Mariana integration initialized successfully");
+    } catch (error) {
+      console.error("❌ Mariana init failed:", error);
+    }
+
+    return () => {
       try {
         if (containerRef.current) {
           containerRef.current.innerHTML = "";
@@ -63,9 +125,12 @@ export function MarianatekIntegration({
         // Silent cleanup
       }
     };
-  }, [isHydrated, isScriptLoaded, location.pathname, type]);
+  }, [isReady, type]);
 
-  if (!isHydrated || !isScriptLoaded) {
+  console.log("🎨 Rendering state:", { isHydrated, isReady });
+
+  if (!isHydrated || !isReady) {
+    console.log("⏳ Showing loading state");
     return (
       <div
         className={cn(
@@ -73,11 +138,12 @@ export function MarianatekIntegration({
           className
         )}
       >
-        <div className="text-foreground/50">Loading...</div>
+        <div className="text-gray-500">Loading...</div>
       </div>
     );
   }
 
+  console.log("✅ Rendering Mariana container");
   return (
     <div
       ref={containerRef}
