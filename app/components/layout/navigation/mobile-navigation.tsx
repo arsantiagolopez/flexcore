@@ -2,7 +2,11 @@ import React from "react";
 import { Link, NavLink } from "react-router";
 import { Image } from "~/components/image";
 import { cn } from "~/lib/utils";
-import { ADDRESS, EMAIL_ADDRESS } from "~/lib/utils/constants";
+import {
+  ADDRESS,
+  EMAIL_ADDRESS,
+  MARIANATEK_ROUTES,
+} from "~/lib/utils/constants";
 import { routes } from "~/lib/utils/nav-links";
 import { Accordion } from "@base-ui-components/react/accordion";
 import { ChevronDown } from "lucide-react";
@@ -124,6 +128,9 @@ export function MobileNavigation() {
                               to={subItem.to}
                               className="block py-1.5 text-overlay-foreground drop-shadow-md text-lg font-light tracking-wide hover:opacity-70 transition-opacity duration-200"
                               onClick={toggleMenu}
+                              reloadDocument={MARIANATEK_ROUTES.includes(
+                                subItem.to
+                              )}
                             >
                               {subItem.label}
                             </NavLink>
@@ -148,6 +155,7 @@ export function MobileNavigation() {
                       : `animate-out fade-out duration-500 ${closingDelays[index]}`
                   )}
                   onClick={toggleMenu}
+                  reloadDocument={MARIANATEK_ROUTES.includes(item.to!)}
                 >
                   {item.label}
                 </NavLink>

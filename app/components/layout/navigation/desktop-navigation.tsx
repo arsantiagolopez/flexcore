@@ -7,6 +7,7 @@ import {
   EMAIL_ADDRESS,
   EMAIL_SUBJECT,
   INSTAGRAM_USERNAME,
+  MARIANATEK_ROUTES,
 } from "~/lib/utils/constants";
 import { EmailLink, InstagramLink } from "./navigation";
 import { NavigationMenu } from "@base-ui-components/react/navigation-menu";
@@ -195,6 +196,7 @@ export function HeaderContent({
                   className={({ isActive }) =>
                     cn(baseStyles, activeTextColorClass, isActive && "italic")
                   }
+                  reloadDocument={MARIANATEK_ROUTES.includes(to!)}
                 >
                   {label}
                 </NavLink>
@@ -231,6 +233,7 @@ export function HeaderContent({
         <Link
           to="/account"
           className="hover:opacity-70 transition-colors duration-300 ease-in-out"
+          reloadDocument
         >
           <CircleUserRound
             strokeWidth={2}
@@ -248,7 +251,9 @@ function CustomNavLink(
   const { to, isActive, className, children, ...rest } = props;
   return (
     <NavigationMenu.Link
-      render={<NavLink to={to} />}
+      render={
+        <NavLink to={to} reloadDocument={MARIANATEK_ROUTES.includes(to!)} />
+      }
       className={className}
       {...rest}
     >

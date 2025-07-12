@@ -1,7 +1,7 @@
 import { MapPin } from "lucide-react";
 import { Image } from "../image";
 import { NavLink } from "react-router";
-import { ADDRESS } from "~/lib/utils/constants";
+import { ADDRESS, MARIANATEK_ROUTES } from "~/lib/utils/constants";
 import { Separator } from "@base-ui-components/react";
 import { routes } from "~/lib/utils/nav-links";
 import { cn } from "~/lib/utils";
@@ -32,7 +32,11 @@ export function Footer() {
             if (!to && items) {
               return items.map(({ id, to, label }) => (
                 <li key={id}>
-                  <NavLink to={to} className={cn(baseStyles)}>
+                  <NavLink
+                    to={to}
+                    className={cn(baseStyles)}
+                    reloadDocument={MARIANATEK_ROUTES.includes(to)}
+                  >
                     {label}
                   </NavLink>
                 </li>
@@ -41,7 +45,11 @@ export function Footer() {
 
             return (
               <li key={id}>
-                <NavLink to={to} className={cn(baseStyles)}>
+                <NavLink
+                  to={to}
+                  className={cn(baseStyles)}
+                  reloadDocument={MARIANATEK_ROUTES.includes(to)}
+                >
                   {label}
                 </NavLink>
               </li>

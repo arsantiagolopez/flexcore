@@ -72,7 +72,9 @@ export function MarianatekIntegration({
           "min-h-[600px] w-full flex items-center justify-center",
           className
         )}
-      />
+      >
+        <div className="text-foreground/50">Loading...</div>
+      </div>
     );
   }
 
