@@ -48,7 +48,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
-        <script
+        {/* <script
           dangerouslySetInnerHTML={{
             __html: `
               (function () {
@@ -64,18 +64,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
               })();
             `,
           }}
-        />
+        /> */}
       </head>
       <body>
         <div className="root">{children}</div>
         <ScrollRestoration />
         <Scripts />
-        <noscript>
+        {/* <noscript>
           Please enable JavaScript to view the
           <a href="https://marianatek.com/?ref_noscript" rel="nofollow">
             Web Integrations by Mariana Tek.
           </a>
-        </noscript>
+        </noscript> */}
       </body>
     </html>
   );
