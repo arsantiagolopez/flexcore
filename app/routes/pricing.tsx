@@ -1,4 +1,5 @@
 import type { Route } from "./+types/pricing";
+import { MarianatekIntegration } from "~/components/marianatek-integration";
 
 const plans = [
   { id: "credits", title: "Class Credits" },
@@ -9,13 +10,9 @@ const plans = [
 export default function PricingRoute() {
   return (
     <div className="flex flex-col">
-      <section className="flex flex-col items-center gap-16 md:gap-20 p-8 py-20 md:p-32">
+      <section className="flex flex-col items-center p-8 py-20 md:p-32">
         <h1 className="text-3xl md:text-5xl font-bold">OUR PRICING</h1>
-        <div className="flex flex-col md:grid md:grid-cols-3 gap-8 w-full">
-          {plans.map(({ id, title }) => (
-            <PricingPlan key={id} title={title} />
-          ))}
-        </div>
+        <MarianatekIntegration type="/buy" />
       </section>
     </div>
   );

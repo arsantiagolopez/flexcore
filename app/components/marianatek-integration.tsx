@@ -10,6 +10,7 @@ declare global {
       render: () => void;
       destroy?: () => void;
     };
+    __mtIntegrationsInitialized?: Set<string>;
   }
 }
 
@@ -23,22 +24,49 @@ export function MarianatekIntegration({
   const isHydrated = useIsHydrated();
   const location = useLocation();
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const initTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const isInitializedRef = React.useRef(false);
 
   React.useEffect(() => {
     if (!isHydrated || !containerRef.current) return;
 
+    // Initialize tracking set if it doesn't exist
+    if (!window.__mtIntegrationsInitialized) {
+      window.__mtIntegrationsInitialized = new Set();
+    }
+
+    // Check if this specific type has already been initialized
+    if (window.__mtIntegrationsInitialized.has(type)) {
+      console.log(`Integration ${type} already initialized, skipping`);
+      return;
+    }
+
     const initializeIntegrations = () => {
-      // Make sure the element exists in the DOM
-      if (!containerRef.current) {
-        console.warn("Container ref not available");
+      // Double-check the container still exists
+      if (!containerRef.current || isInitializedRef.current) {
         return;
       }
 
-      // Clear only OTHER integration elements, not the current one
-      const existingElements = document.querySelectorAll(
+      // Check if an element with this type already exists and has content
+      const existingElement = document.querySelector(
+        `[data-mariana-integrations="${type}"]`
+      );
+      if (existingElement && existingElement.innerHTML.trim() !== "") {
+        console.log(`Integration ${type} already has content, skipping`);
+        window.__mtIntegrationsInitialized?.add(type);
+        isInitializedRef.current = true;
+        return;
+      }
+
+      // Clear OTHER integration elements
+      const otherElements = document.querySelectorAll(
         `[data-mariana-integrations]:not([data-mariana-integrations="${type}"])`
       );
-      existingElements.forEach((el) => {
+      otherElements.forEach((el) => {
+        const elType = el.getAttribute("data-mariana-integrations");
+        if (elType && window.__mtIntegrationsInitialized) {
+          window.__mtIntegrationsInitialized.delete(elType);
+        }
         el.innerHTML = "";
       });
 
@@ -51,12 +79,40 @@ export function MarianatekIntegration({
           typeof window.MTIntegrations.render === "function"
         ) {
           window.MTIntegrations.render();
+          // Mark this type as initialized
+          window.__mtIntegrationsInitialized?.add(type);
+          isInitializedRef.current = true;
         }
       }
     };
 
-    // Use a longer delay to ensure DOM is fully ready
-    setTimeout(initializeIntegrations, 50);
+    // Clear any existing timeout
+    if (initTimeoutRef.current) {
+      clearTimeout(initTimeoutRef.current);
+    }
+
+    // Use a timeout to ensure DOM is ready
+    initTimeoutRef.current = setTimeout(initializeIntegrations, 50);
+
+    // Cleanup function
+    return () => {
+      if (initTimeoutRef.current) {
+        clearTimeout(initTimeoutRef.current);
+      }
+
+      // Remove this type from initialized set on unmount
+      if (window.__mtIntegrationsInitialized) {
+        window.__mtIntegrationsInitialized.delete(type);
+      }
+
+      // Reset the ref
+      isInitializedRef.current = false;
+
+      // Optional: Call destroy if available
+      if (window.MTIntegrations?.destroy) {
+        window.MTIntegrations.destroy();
+      }
+    };
   }, [isHydrated, location.pathname, type]);
 
   if (!isHydrated) {
