@@ -1,6 +1,6 @@
 import React from "react";
 import { useIsHydrated } from "~/hooks/use-is-hydrated";
-import { useLocation } from "react-router";
+import { NavLink, useLocation } from "react-router";
 import { useScrollThreshold } from "~/hooks/use-scroll-threshold";
 import { cn } from "~/lib/utils";
 import {
@@ -192,7 +192,7 @@ export function HeaderContent({
             // Handle regular navigation items
             return (
               <NavigationMenu.Item key={id}>
-                <a
+                {/* <a
                   href={to}
                   className={cn(
                     baseStyles,
@@ -201,7 +201,18 @@ export function HeaderContent({
                   )}
                 >
                   {label}
-                </a>
+                </a> */}
+                <NavLink
+                  to={to!}
+                  className={cn(
+                    baseStyles,
+                    activeTextColorClass,
+                    isActive && "italic"
+                  )}
+                  reloadDocument
+                >
+                  {label}
+                </NavLink>
               </NavigationMenu.Item>
             );
           })}
